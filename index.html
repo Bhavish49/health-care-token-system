@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthSync | Smart Hospital Queue Management</title>
+    <meta name="description" content="HealthSync streamlines hospital patient flow with intelligent digital token management, multi-doctor queues, and real-time WhatsApp notifications.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Supabase -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="js/services/supabase.js"></script>
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/main.css">
+    <style>
+        /* ── Hero ─────────────────────────────────── */
+        .hero-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: flex-end; /* anchor content to bottom */
+            padding-top: 76px;
+        }
+
+        /* Left column bottom-aligned, right column centered */
+        .hero-section .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: flex-end; /* both columns anchor at bottom */
+            padding-bottom: 80px;  /* lift above footer edge */
+        }
+
+        /* ── Left: Hospital Search ────────── */
+        .hospital-search-panel {
+            padding: 0 0 0 0; /* no extra padding, grid bottom-padding handles spacing */
+            align-self: flex-end;
+        }
+
+        .search-label {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 6px;
+        }
+
+        .search-sub {
+            font-size: 0.9rem;
+            color: #0f172a;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        .search-box-wrap {
+            position: relative;
+        }
+
+        .search-input-row {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 2px solid #0f172a;
+            border-radius: 16px;
+            padding: 0 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            transition: all 0.2s;
+        }
+
+        .search-input-row:focus-within {
+            background: rgba(255,255,255,0.85);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(249,115,22,0.15);
+        }
+
+        .search-input-row i {
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .search-input-row input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            padding: 18px 16px;
+            font-size: 1rem;
+            font-family: inherit;
+            color: #0f172a;
+            font-weight: 500;
+        }
+
+        .search-input-row input::placeholder {
+            color: #1e293b;
+            font-weight: 500;
+        }
+
+        .search-clear {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #94a3b8;
+            display: none;
+            padding: 4px;
+            transition: color 0.2s;
+        }
+
+        .search-clear:hover { color: #475569; }
+
+        /* Dropdown results */
+        .search-dropdown {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0; right: 0;
+            background: rgba(255,255,255,0.96);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.9);
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+            overflow: hidden;
+            display: none;
+            z-index: 100;
+        }
+
+        .search-dropdown.open { display: block; }
+
+        .search-result-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+            text-decoration: none;
+            transition: background 0.15s;
+            border-bottom: 1px solid #f1f5f9;
+            cursor: pointer;
+        }
+
+        .search-result-item:last-child { border-bottom: none; }
+
+        .search-result-item:hover { background: rgba(249,115,22,0.05); }
+
+        .search-result-icon {
+            width: 40px; height: 40px;
+            border-radius: 10px;
+            background: rgba(249,115,22,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .search-result-info strong {
+            display: block;
+            color: #0f172a;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .search-result-info span {
+            color: #64748b;
+            font-size: 0.8rem;
+        }
+
+        .search-empty {
+            padding: 24px;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .search-loading {
+            padding: 20px;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 0.875rem;
+        }
+
+        /* ── Right: Hero text ────────── */
+        .hero-inner {
+            padding: 0 0 0 0;
+            align-self: center; /* keep hero text vertically centered */
+        }
+
+        .hero-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(249, 115, 22, 0.1);
+            color: var(--primary);
+            border: 1px solid rgba(249, 115, 22, 0.25);
+            border-radius: 100px;
+            padding: 6px 16px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 28px;
+        }
+
+        .hero-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(2.4rem, 5vw, 3.8rem);
+            font-weight: 900;
+            line-height: 1.08;
+            letter-spacing: -0.03em;
+            color: #0f172a;
+            margin-bottom: 20px;
+        }
+
+        .hero-title span { color: var(--primary); }
+
+        .hero-subtitle {
+            font-size: 1.05rem;
+            color: #1e3a5f;  /* deep navy — readable on the near-white right side of illustration */
+            line-height: 1.72;
+            margin-bottom: 40px;
+            max-width: 480px;
+            font-weight: 500;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn-cta-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--primary);
+            color: #fff;
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: all 0.25s;
+            box-shadow: 0 6px 20px rgba(249, 115, 22, 0.35);
+        }
+
+        .btn-cta-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(249, 115, 22, 0.45);
+        }
+
+        .btn-cta-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.85);
+            color: var(--text);
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            border: 1px solid var(--border);
+            transition: all 0.25s;
+        }
+
+        .btn-cta-secondary:hover {
+            background: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+        }
+
+        /* ── Stats Bar ────────────────────────────── */
+        .stats-bar {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(12px);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            padding: 32px 0;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 0 24px;
+            border-right: 1px solid var(--border);
+        }
+
+        .stat-item:last-child { border-right: none; }
+
+        .stat-item .value {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+
+        .stat-item .label {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* ── Services Section ─────────────────────── */
+        .services-section {
+            background: #ffffff;
+            padding: 100px 0;
+        }
+
+        .section-tag {
+            display: inline-block;
+            color: var(--primary);
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 800;
+            color: var(--text);
+            letter-spacing: -0.02em;
+            line-height: 1.15;
+            margin-bottom: 20px;
+        }
+
+        .section-intro {
+            font-size: 1.05rem;
+            color: var(--text-muted);
+            line-height: 1.75;
+            max-width: 700px;
+            margin-bottom: 16px;
+        }
+
+        .section-intro + .section-intro {
+            margin-bottom: 64px;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 28px;
+        }
+
+        .service-card {
+            background: #f8fafc;
+            border: 1px solid #e8f0fe;
+            border-radius: 18px;
+            padding: 36px 32px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(to right, var(--primary), #60c2f7);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .service-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px rgba(26, 143, 227, 0.1);
+            border-color: rgba(26, 143, 227, 0.2);
+        }
+
+        .service-card:hover::before { transform: scaleX(1); }
+
+        .service-icon {
+            width: 52px;
+            height: 52px;
+            background: rgba(26, 143, 227, 0.1);
+            color: var(--primary);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .service-card h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 12px;
+        }
+
+        .service-card p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.65;
+        }
+
+        /* ── How It Works ─────────────────────────── */
+        .how-section {
+            background: #f0f7ff;
+            padding: 100px 0;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0;
+            margin-top: 60px;
+            position: relative;
+        }
+
+        .steps-grid::before {
+            content: '';
+            position: absolute;
+            top: 36px;
+            left: 12.5%;
+            width: 75%;
+            height: 2px;
+            background: linear-gradient(to right, var(--primary), #60c2f7);
+            z-index: 0;
+        }
+
+        .step-item {
+            text-align: center;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-number {
+            width: 72px;
+            height: 72px;
+            background: var(--primary);
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin: 0 auto 24px;
+            box-shadow: 0 8px 24px rgba(26, 143, 227, 0.3);
+        }
+
+        .step-item h4 {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .step-item p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* ── Footer ───────────────────────────────── */
+        .footer {
+            background: var(--text);
+            color: rgba(255,255,255,0.6);
+            padding: 48px 0;
+        }
+
+        .footer-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 24px;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 1.3rem;
+            color: #fff;
+        }
+
+        .footer-logo i { color: #60c2f7; }
+
+        .footer-copy {
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Background -->
+    <div class="bg-scene"></div>
+
+    <!-- ── Navbar ── -->
+    <nav class="navbar" id="navbar">
+        <div class="container nav-content">
+
+            <!-- LEFT: Logo -->
+            <a href="index.html" class="logo">
+                <i data-lucide="shield-check"></i> HealthSync
+            </a>
+
+            <!-- CENTER: Navigation Links -->
+            <ul class="nav-links">
+                <li><a href="#home" class="active">Home</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#how">How It Works</a></li>
+                <li><a href="#help">Help</a></li>
+                <li><a href="#settings">Settings</a></li>
+            </ul>
+
+            <!-- RIGHT: Actions -->
+            <div class="nav-actions">
+                <a href="auth.html?role=doctor" class="btn-nav-ghost">Doctor Registration</a>
+                <a href="auth.html?role=admin" class="btn-primary">Hospital Login</a>
+            </div>
+
+        </div>
+    </nav>
+
+    <!-- ── HERO ── -->
+    <section class="hero-section" id="home">
+        <div class="container">
+
+            <!-- LEFT: Hospital Search -->
+            <div class="hospital-search-panel fade-up">
+                <p class="search-label">Find Your Hospital</p>
+                <p class="search-sub">Search by hospital name to get your digital token</p>
+
+                <div class="search-box-wrap">
+                    <div class="search-input-row">
+                        <i data-lucide="search" size="20"></i>
+                        <input type="text" id="hospitalSearch"
+                            placeholder="e.g. City General Hospital..."
+                            autocomplete="off">
+                        <button class="search-clear" id="searchClear">
+                            <i data-lucide="x" size="16"></i>
+                        </button>
+                    </div>
+
+                    <div class="search-dropdown" id="searchDropdown">
+                        <!-- Results injected here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: Hero content -->
+            <div class="hero-inner fade-up" style="animation-delay:0.15s">
+                <div class="hero-eyebrow">
+                    <i data-lucide="activity" size="13"></i>
+                    Next-Gen Hospital Management
+                </div>
+                <h1 class="hero-title">
+                    Smarter Queues.<br>
+                    <span>Healthier Hospitals.</span>
+                </h1>
+                <p class="hero-subtitle">
+                    HealthSync replaces paper tokens and crowded waiting rooms with an intelligent digital queue system — giving doctors control and patients peace of mind.
+                </p>
+                <div class="hero-cta">
+                    <a href="auth.html?role=admin" class="btn-cta-primary">
+                        <i data-lucide="building-2" size="18"></i>
+                        Register Your Hospital
+                    </a>
+                    <a href="portal.html" class="btn-cta-secondary">
+                        <i data-lucide="ticket" size="18"></i>
+                        Get a Token Demo
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ── STATS BAR ── -->
+    <div class="stats-bar">
+        <div class="container">
+            <div class="stats-row">
+                <div class="stat-item">
+                    <div class="value">500+</div>
+                    <div class="label">Hospitals Enrolled</div>
+                </div>
+                <div class="stat-item">
+                    <div class="value">1.2M</div>
+                    <div class="label">Tokens Issued</div>
+                </div>
+                <div class="stat-item">
+                    <div class="value">98%</div>
+                    <div class="label">Patient Satisfaction</div>
+                </div>
+                <div class="stat-item">
+                    <div class="value">&lt;1s</div>
+                    <div class="label">Queue Update Latency</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── SERVICES ── -->
+    <section class="services-section" id="services">
+        <div class="container">
+            <span class="section-tag">Our Services</span>
+            <h2 class="section-title">Everything a Modern<br>Hospital Needs</h2>
+
+            <p class="section-intro">
+                HealthSync provides hospitals with a fully integrated digital token management ecosystem. 
+                At its core, the system eliminates physical token counters and replaces them with intelligent, 
+                cloud-backed queuing technology. Each patient receives a unique digital token upon arrival — 
+                either via the patient portal or directly at a facility kiosk — and is automatically 
+                notified in real time as their turn approaches, reducing waiting room congestion by up to 70%.
+            </p>
+            <p class="section-intro">
+                Beyond token issuance, HealthSync delivers a comprehensive suite of tools for hospital administrators 
+                and clinical staff. Admins can onboard multiple doctors under a single facility, assign room numbers, 
+                define specializations, and monitor live queue metrics from a unified command dashboard. 
+                Doctors receive a dedicated clinical view to call, skip, or complete patient appointments with one 
+                click, while automated WhatsApp notifications keep patients informed at every step — 
+                turning a traditionally stressful experience into a seamless, dignified one.
+            </p>
+
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon"><i data-lucide="ticket" size="24"></i></div>
+                    <h3>Digital Token Issuance</h3>
+                    <p>Patients generate tokens instantly via the web portal. No counter, no paper, no confusion — just a unique queue number delivered to their phone.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon"><i data-lucide="message-circle" size="24"></i></div>
+                    <h3>WhatsApp Notifications</h3>
+                    <p>Automatic real-time alerts are sent to patients via WhatsApp the moment their turn is approaching, keeping them informed from anywhere.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon"><i data-lucide="layout-dashboard" size="24"></i></div>
+                    <h3>Doctor Dashboard</h3>
+                    <p>Each doctor gets a personal live queue view to manage their patients efficiently — call next, mark complete, or skip with a single action.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon"><i data-lucide="building-2" size="24"></i></div>
+                    <h3>Hospital Administration</h3>
+                    <p>Register and manage your entire hospital — multiple departments, multiple doctors, room assignments, and facility metrics in one place.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon"><i data-lucide="users" size="24"></i></div>
+                    <h3>Multi-Doctor Support</h3>
+                    <p>Run parallel queues for every specialist under one hospital node. Cardiology, Neurology, Dermatology — all independent, all live.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon"><i data-lucide="shield-check" size="24"></i></div>
+                    <h3>Secure Access Control</h3>
+                    <p>Doctors verify themselves using hospital credentials before creating an account, ensuring only authorized medical staff join your facility.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── HOW IT WORKS ── -->
+    <section class="how-section" id="how">
+        <div class="container">
+            <span class="section-tag">The Process</span>
+            <h2 class="section-title">How HealthSync Works</h2>
+
+            <div class="steps-grid">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <h4>Hospital Registers</h4>
+                    <p>Admin creates a facility account with hospital name, email, and location via Google Maps.</p>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <h4>Doctors Join</h4>
+                    <p>Doctors verify using hospital credentials, then complete their professional profile.</p>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <h4>Patient Gets Token</h4>
+                    <p>Patient selects a doctor and receives an instant digital token via the patient portal.</p>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <h4>Real-Time Updates</h4>
+                    <p>Doctor calls patients from their dashboard. Patient gets a WhatsApp alert instantly.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── FOOTER ── -->
+    <footer class="site-footer">
+        <!-- Top: columns -->
+        <div class="footer-top">
+            <div class="container footer-top-inner">
+
+                <!-- Brand -->
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <i data-lucide="shield-check"></i> HealthSync
+                    </div>
+                    <p class="footer-tagline">
+                        Intelligent digital queue management for modern hospitals. Reduce wait times, improve patient care.
+                    </p>
+                </div>
+
+                <!-- Column 1 -->
+                <div class="footer-col">
+                    <h5>Platform</h5>
+                    <ul>
+                        <li><a href="#">Hospital Registration</a></li>
+                        <li><a href="#">Doctor Portal</a></li>
+                        <li><a href="#">Patient Token</a></li>
+                        <li><a href="#">Admin Dashboard</a></li>
+                        <li><a href="#">WhatsApp Alerts</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 2 -->
+                <div class="footer-col">
+                    <h5>Support</h5>
+                    <ul>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Getting Started</a></li>
+                        <li><a href="#">API Documentation</a></li>
+                        <li><a href="#">System Status</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 3 -->
+                <div class="footer-col">
+                    <h5>Company</h5>
+                    <ul>
+                        <li><a href="#">About HealthSync</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Press Kit</a></li>
+                        <li><a href="#">Partners</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 4 -->
+                <div class="footer-col">
+                    <h5>Legal</h5>
+                    <ul>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Cookie Policy</a></li>
+                        <li><a href="#">HIPAA Compliance</a></li>
+                        <li><a href="#">Data Processing</a></li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Middle: Social icons row -->
+        <div class="footer-social-bar">
+            <div class="container footer-social-inner">
+                <div class="social-icons">
+                    <a href="#" aria-label="Facebook"><i data-lucide="facebook" size="20"></i></a>
+                    <a href="#" aria-label="Twitter/X"><i data-lucide="twitter" size="20"></i></a>
+                    <a href="#" aria-label="Instagram"><i data-lucide="instagram" size="20"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i data-lucide="linkedin" size="20"></i></a>
+                    <a href="#" aria-label="YouTube"><i data-lucide="youtube" size="20"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom: copyright bar -->
+        <div class="footer-bottom-bar">
+            <div class="container footer-bottom-inner">
+                <span class="footer-copy">© 2026 HealthSync Technologies Pvt. Ltd. All rights reserved.</span>
+                <div class="footer-bottom-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Use</a>
+                    <a href="#">Cookie Settings</a>
+                    <a href="#">Sitemap</a>
+                    <a href="#">Contact Us</a>
+                    <a href="#">India</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ── Help Modal ── -->
+    <div id="helpModal" class="hs-modal-overlay" onclick="closeModal('helpModal')">
+        <div class="hs-modal" onclick="event.stopPropagation()">
+            <button class="hs-modal-close" onclick="closeModal('helpModal')"><i data-lucide="x" size="20"></i></button>
+            <div class="hs-modal-icon" style="background:rgba(249,115,22,0.1)"><i data-lucide="help-circle" size="28" style="color:var(--primary)"></i></div>
+            <h2 class="hs-modal-title">Help Center</h2>
+            <p class="hs-modal-sub">How can we help you today?</p>
+            <div class="hs-help-grid">
+                <a href="#" class="hs-help-card"><i data-lucide="book-open" size="22"></i><span>Getting Started</span></a>
+                <a href="#" class="hs-help-card"><i data-lucide="hospital" size="22"></i><span>Hospital Setup</span></a>
+                <a href="#" class="hs-help-card"><i data-lucide="stethoscope" size="22"></i><span>Doctor Onboarding</span></a>
+                <a href="#" class="hs-help-card"><i data-lucide="ticket" size="22"></i><span>Token System</span></a>
+                <a href="#" class="hs-help-card"><i data-lucide="message-circle" size="22"></i><span>WhatsApp Alerts</span></a>
+                <a href="#" class="hs-help-card"><i data-lucide="mail" size="22"></i><span>Contact Support</span></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Settings Modal ── -->
+    <div id="settingsModal" class="hs-modal-overlay" onclick="closeModal('settingsModal')">
+        <div class="hs-modal" onclick="event.stopPropagation()">
+            <button class="hs-modal-close" onclick="closeModal('settingsModal')"><i data-lucide="x" size="20"></i></button>
+            <div class="hs-modal-icon" style="background:rgba(249,115,22,0.1)"><i data-lucide="settings" size="28" style="color:var(--primary)"></i></div>
+            <h2 class="hs-modal-title">Settings</h2>
+            <p class="hs-modal-sub">Manage your HealthSync preferences</p>
+            <div class="hs-settings-list">
+                <div class="hs-setting-row">
+                    <div><strong>Language</strong><p>Choose your display language</p></div>
+                    <select class="hs-select"><option>English</option><option>Hindi</option><option>Tamil</option></select>
+                </div>
+                <div class="hs-setting-row">
+                    <div><strong>Notifications</strong><p>WhatsApp &amp; SMS alerts</p></div>
+                    <label class="hs-toggle"><input type="checkbox" checked><span></span></label>
+                </div>
+                <div class="hs-setting-row">
+                    <div><strong>Dark Mode</strong><p>Switch to dark interface</p></div>
+                    <label class="hs-toggle"><input type="checkbox"><span></span></label>
+                </div>
+                <div class="hs-setting-row">
+                    <div><strong>Account</strong><p>Login or register</p></div>
+                    <a href="auth.html" class="hs-setting-link">Open <i data-lucide="arrow-right" size="14"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .hs-modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15,23,42,0.45);
+            backdrop-filter: blur(6px);
+            z-index: 9000;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .hs-modal-overlay.open { display: flex; }
+        .hs-modal {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 48px 44px;
+            width: 100%;
+            max-width: 540px;
+            position: relative;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.15);
+            animation: fadeUp 0.3s ease;
+        }
+        .hs-modal-close {
+            position: absolute;
+            top: 20px; right: 20px;
+            background: #f1f5f9;
+            border: none;
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            transition: background 0.2s;
+        }
+        .hs-modal-close:hover { background: #e2e8f0; }
+        .hs-modal-icon {
+            width: 60px; height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+        .hs-modal-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+        .hs-modal-sub { color: var(--text-muted); margin-bottom: 32px; font-size: 0.95rem; }
+        /* Help grid */
+        .hs-help-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+        .hs-help-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 18px 20px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        .hs-help-card:hover { border-color: var(--primary); color: var(--primary); background: rgba(249,115,22,0.04); }
+        .hs-help-card i { color: var(--primary); flex-shrink: 0; }
+        /* Settings list */
+        .hs-settings-list { display: flex; flex-direction: column; gap: 4px; }
+        .hs-setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .hs-setting-row:last-child { border-bottom: none; }
+        .hs-setting-row strong { display: block; color: var(--text); font-size: 0.95rem; margin-bottom: 3px; }
+        .hs-setting-row p { color: var(--text-muted); font-size: 0.82rem; margin: 0; }
+        .hs-select {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 0.875rem;
+            color: var(--text);
+            background: #fff;
+            cursor: pointer;
+        }
+        .hs-toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+        .hs-toggle input { opacity: 0; width: 0; height: 0; }
+        .hs-toggle span {
+            position: absolute; inset: 0;
+            background: #cbd5e1;
+            border-radius: 100px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .hs-toggle span::before {
+            content: '';
+            position: absolute;
+            width: 18px; height: 18px;
+            left: 3px; top: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+        .hs-toggle input:checked + span { background: var(--primary); }
+        .hs-toggle input:checked + span::before { transform: translateX(20px); }
+        .hs-setting-link {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+        }
+    </style>
+
+    <script>
+        lucide.createIcons();
+
+        function openModal(id) {
+            document.getElementById(id).classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        // Keyboard close
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.hs-modal-overlay.open').forEach(m => m.classList.remove('open'));
+                document.body.style.overflow = '';
+            }
+        });
+
+        // Nav link wiring
+        document.querySelectorAll('.nav-links li a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                if (href === '#help') { e.preventDefault(); openModal('helpModal'); }
+                else if (href === '#settings') { e.preventDefault(); openModal('settingsModal'); }
+                else {
+                    const target = document.querySelector(href);
+                    if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+                }
+            });
+        });
+
+        // Active nav link on scroll
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.nav-links li a');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                if (window.scrollY >= section.offsetTop - 100) {
+                    current = section.getAttribute('id');
+                }
+            });
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+        // ── Hospital Search ──────────────────────────────
+        const searchInput  = document.getElementById('hospitalSearch');
+        const searchDrop   = document.getElementById('searchDropdown');
+        const searchClear  = document.getElementById('searchClear');
+        let searchTimer    = null;
+
+        searchInput.addEventListener('input', () => {
+            const q = searchInput.value.trim();
+            searchClear.style.display = q ? 'flex' : 'none';
+            clearTimeout(searchTimer);
+
+            if (q.length < 2) {
+                searchDrop.classList.remove('open');
+                return;
+            }
+
+            searchDrop.innerHTML = '<div class="search-loading">Searching...</div>';
+            searchDrop.classList.add('open');
+
+            searchTimer = setTimeout(() => searchHospitals(q), 300);
+        });
+
+        searchClear.addEventListener('click', () => {
+            searchInput.value = '';
+            searchClear.style.display = 'none';
+            searchDrop.classList.remove('open');
+            searchInput.focus();
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.search-box-wrap')) {
+                searchDrop.classList.remove('open');
+            }
+        });
+
+        async function searchHospitals(query) {
+            try {
+                const { data, error } = await window.supabaseClient
+                    .from('profiles')
+                    .select('id, full_name, location, email')
+                    .eq('role', 'admin')
+                    .ilike('full_name', `%${query}%`)
+                    .limit(6);
+
+                if (error) throw error;
+
+                if (!data || data.length === 0) {
+                    searchDrop.innerHTML = `
+                        <div class="search-empty">
+                            <i data-lucide="building-2" size="28" style="color:#cbd5e1;margin-bottom:8px"></i>
+                            <p>No hospital found for "<strong>${query}</strong>"</p>
+                        </div>`;
+                    lucide.createIcons();
+                    return;
+                }
+
+                searchDrop.innerHTML = data.map(h => `
+                    <a href="portal.html?hospital_id=${h.id}" class="search-result-item">
+                        <div class="search-result-icon">
+                            <i data-lucide="building-2" size="20"></i>
+                        </div>
+                        <div class="search-result-info">
+                            <strong>${h.full_name}</strong>
+                            <span>${h.location || 'Location not set'}</span>
+                        </div>
+                        <i data-lucide="arrow-right" size="16" style="color:#cbd5e1;margin-left:auto;flex-shrink:0"></i>
+                    </a>
+                `).join('');
+                lucide.createIcons();
+
+            } catch (err) {
+                searchDrop.innerHTML = `<div class="search-empty">Could not connect. Check your internet connection.</div>`;
+            }
+        }
+    </script>
+</body>
+</html>

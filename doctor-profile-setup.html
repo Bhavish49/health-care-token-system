@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Setup | HealthSync Onboarding</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@700;800&display=swap" rel="stylesheet">
+    
+    <!-- Icons & Services -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/main.css">
+    <style>
+        .setup-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 24px;
+        }
+
+        .setup-card {
+            background: var(--surface);
+            backdrop-filter: blur(40px);
+            border: 1px solid var(--glass-border);
+            border-radius: 40px;
+            width: 100%;
+            max-width: 800px;
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            overflow: hidden;
+            box-shadow: 0 60px 120px -30px rgba(0, 0, 0, 0.8);
+        }
+
+        .setup-sidebar {
+            background: rgba(14, 165, 233, 0.05);
+            padding: 48px;
+            border-right: 1px solid var(--glass-border);
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+
+        .setup-main {
+            padding: 56px;
+        }
+
+        .avatar-upload {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            margin: 0 auto 40px;
+        }
+
+        .avatar-preview {
+            width: 100%;
+            height: 100%;
+            border-radius: 40px;
+            background: var(--surface);
+            border: 2px dashed var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .avatar-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .avatar-upload input {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .input-group input, .input-group select, .input-group textarea {
+            width: 100%;
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 16px;
+            color: #fff;
+            font-family: inherit;
+        }
+
+        .input-group select option {
+            background: #0f172a;
+            color: #fff;
+        }
+
+        .full-width { grid-column: span 2; }
+    </style>
+</head>
+<body>
+    <div class="bg-scene">
+        <div class="bg-blur-blob bg-blob-1"></div>
+        <div class="bg-blur-blob bg-blob-2"></div>
+    </div>
+
+    <div class="setup-wrapper">
+        <div class="setup-card fade-up">
+            <aside class="setup-sidebar">
+                <div class="logo">
+                    <i data-lucide="shield-check"></i> HealthSync
+                </div>
+                <div>
+                    <h3 style="font-size: 1.5rem; margin-bottom: 12px;">Welcome, Doctor</h3>
+                    <p style="color: var(--text-muted); line-height: 1.6;">Let's complete your professional profile. This information will be visible to your patients.</p>
+                </div>
+                <div style="margin-top: auto;">
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">Step 2 of 2: Professional Verification</p>
+                </div>
+            </aside>
+
+            <main class="setup-main">
+                <form id="setupForm">
+                    <div class="avatar-upload">
+                        <div class="avatar-preview" id="avatarPreview">
+                            <i data-lucide="camera" size="32" style="color: var(--text-muted);"></i>
+                        </div>
+                        <input type="file" id="photoInput" accept="image/*">
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="input-group full-width">
+                            <label>Full Professional Name</label>
+                            <input type="text" id="docName" required placeholder="Dr. Julian Bashir">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>Qualification</label>
+                            <input type="text" id="docQual" required placeholder="MBBS, MD">
+                        </div>
+
+                        <div class="input-group">
+                            <label>Department / Specialty</label>
+                            <select id="docSpec" required>
+                                <option value="">Select Specialty</option>
+                                <option value="Cardiology">Cardiology</option>
+                                <option value="Neurology">Neurology</option>
+                                <option value="Dermatology">Dermatology</option>
+                                <option value="Orthopedics">Orthopedics (Bones)</option>
+                                <option value="Pediatrics">Pediatrics</option>
+                                <option value="General Medicine">General Medicine</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Room / Cabin Number</label>
+                            <input type="text" id="docRoom" required placeholder="e.g. 102-B">
+                        </div>
+
+                        <div class="input-group">
+                            <label>Consultation Fee</label>
+                            <input type="number" id="docFee" placeholder="0.00">
+                        </div>
+
+                        <div class="input-group full-width">
+                            <label>Professional Bio</label>
+                            <textarea id="docBio" rows="3" placeholder="Tell your patients about your experience..."></textarea>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary" style="width: 100%; padding: 18px; margin-top: 20px;">Complete Profile Sync</button>
+                </form>
+            </main>
+        </div>
+    </div>
+
+    <script src="js/services/supabase.js"></script>
+    <script>
+        lucide.createIcons();
+
+        // Photo Preview Logic
+        document.getElementById('photoInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const preview = document.getElementById('avatarPreview');
+                    preview.innerHTML = `<img src="${event.target.result}" alt="Preview">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('setupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const { data: { user } } = await window.supabaseClient.auth.getUser();
+            if (!user) return alert("Session expired. Please log in again.");
+
+            const updates = {
+                id: user.id,
+                full_name: document.getElementById('docName').value,
+                specialization: document.getElementById('docSpec').value,
+                qualification: document.getElementById('docQual').value,
+                room_number: document.getElementById('docRoom').value,
+                bio: document.getElementById('docBio').value,
+                fee: document.getElementById('docFee').value,
+                onboarding_complete: true,
+                updated_at: new Date()
+            };
+
+            const { error } = await window.supabaseClient
+                .from('profiles')
+                .upsert(updates);
+
+            if (error) return alert("Error saving profile: " + error.message);
+
+            alert("Profile Sync Complete! Welcome to the medical staff.");
+            window.location.href = 'dashboards/doctor.html';
+        });
+    </script>
+</body>
+</html>

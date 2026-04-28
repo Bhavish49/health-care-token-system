@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | HealthSync</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="../css/main.css">
+    <style>
+        body {
+            background-color: var(--background);
+            color: var(--text);
+        }
+        .dashboard-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+        .sidebar {
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid var(--glass-border);
+            padding: 32px 24px;
+        }
+        .main-content {
+            padding: 40px;
+            background: radial-gradient(circle at top right, rgba(14, 165, 233, 0.05), transparent);
+        }
+        .doctor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+        }
+        .doctor-admin-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            padding: 24px;
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: all 0.2s;
+        }
+        .doctor-admin-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-4px);
+        }
+        .btn-add {
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <h2 class="mb-4" style="color: var(--primary); display: flex; align-items: center; gap: 12px;">
+                <i data-lucide="shield-check"></i> HealthSync
+            </h2>
+            <nav style="margin-top: 40px;">
+                <a href="#" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: rgba(14, 165, 233, 0.1); color: var(--primary); border-radius: 12px; text-decoration: none; font-weight: 600; margin-bottom: 8px;">
+                    <i data-lucide="building" size="20"></i> Hospital Info
+                </a>
+                <a href="#" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; color: var(--text-light); text-decoration: none; border-radius: 12px; transition: all 0.2s;">
+                    <i data-lucide="users" size="20"></i> Manage Doctors
+                </a>
+                <a href="../index.html" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; color: var(--text-light); text-decoration: none; border-radius: 12px; margin-top: auto;">
+                    <i data-lucide="log-out" size="20"></i> Logout
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="mb-4" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 48px;">
+                <div>
+                    <h1 style="font-size: 2.5rem; margin-bottom: 8px;">Hospital Administration</h1>
+                    <p style="color: var(--text-light);">Manage your staff and medical departments</p>
+                </div>
+                <button class="btn-add" id="addDoctorBtn">
+                    <i data-lucide="plus"></i> Add Doctor
+                </button>
+            </header>
+
+            <div class="doctor-grid" id="doctorGrid">
+                <!-- Doctors will appear here -->
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/services/supabase.js"></script>
+    <script>
+        lucide.createIcons();
+        
+        async function loadDoctors() {
+            const { data: doctors, error } = await window.supabaseClient
+                .from('profiles')
+                .select('*')
+                .eq('role', 'doctor');
+
+            const grid = document.getElementById('doctorGrid');
+            grid.innerHTML = '';
+
+            doctors.forEach(doc => {
+                const card = document.createElement('div');
+                card.className = 'doctor-admin-card';
+                card.innerHTML = `
+                    <div style="width: 56px; height: 56px; background: rgba(14, 165, 233, 0.1); border-radius: 16px; display: flex; align-items: center; justify-content: center; color: var(--primary);">
+                        <i data-lucide="user"></i>
+                    </div>
+                    <div>
+                        <h4 style="margin: 0; font-size: 1.1rem;">${doc.full_name}</h4>
+                        <p style="color: var(--text-light); font-size: 0.85rem; margin: 0;">Room ${doc.room_number || 'N/A'}</p>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+            lucide.createIcons();
+        }
+
+        loadDoctors();
+    </script>
+</body>
+</html>
