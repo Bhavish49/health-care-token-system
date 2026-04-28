@@ -1,0 +1,14 @@
+# IDE and environment files
+.gemini/
+.vscode/
+.idea/
+*.log
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Dependencies (if any)
+node_modules/
+dist/
+build/
