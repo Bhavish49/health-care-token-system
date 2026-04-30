@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile Setup | HealthSync Onboarding</title>
+    <title>Profile Setup | MediQ Onboarding</title>
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -132,7 +132,7 @@
         <div class="setup-card fade-up">
             <aside class="setup-sidebar">
                 <div class="logo">
-                    <i data-lucide="shield-check"></i> HealthSync
+                    <i data-lucide="shield-check"></i> Medi<span class="logo-accent">Q</span>
                 </div>
                 <div>
                     <h3 style="font-size: 1.5rem; margin-bottom: 12px;">Welcome, Doctor</h3>
@@ -223,12 +223,11 @@
 
             const updates = {
                 id: user.id,
-                full_name: document.getElementById('docName').value,
+                name: document.getElementById('docName').value,
                 specialization: document.getElementById('docSpec').value,
                 qualification: document.getElementById('docQual').value,
                 room_number: document.getElementById('docRoom').value,
-                bio: document.getElementById('docBio').value,
-                fee: document.getElementById('docFee').value,
+                description: document.getElementById('docBio').value,
                 onboarding_complete: true,
                 updated_at: new Date()
             };

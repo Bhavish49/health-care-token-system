@@ -87,6 +87,18 @@ body {
   width: 100%;
 }
 
+@media (max-width: 1024px) {
+  .container {
+    padding: 0 32px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 20px;
+  }
+}
+
 /* Three-column grid layout */
 .nav-content {
   display: grid;
@@ -127,6 +139,10 @@ body {
 @keyframes iconSpin {
   from { transform: rotate(-180deg) scale(0.5); opacity: 0; }
   to   { transform: rotate(0deg) scale(1);      opacity: 1; }
+}
+
+.logo-accent {
+  color: var(--primary);
 }
 
 /* Nav links — center, staggered */
@@ -182,6 +198,71 @@ body {
   justify-content: flex-end;
   gap: 28px;
   animation: navItemFade 0.5s 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* --- Mobile Menu Toggle --- */
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text);
+  cursor: pointer;
+  padding: 8px;
+  z-index: 1001;
+}
+
+@media (max-width: 991px) {
+  .menu-toggle {
+    display: block;
+  }
+
+  .nav-content {
+    grid-template-columns: 1fr auto;
+  }
+
+  .nav-links {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 280px;
+    height: 100vh;
+    background: #fff;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 100px 40px;
+    gap: 20px;
+    box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+    transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 1000;
+  }
+
+  .nav-links.active {
+    right: 0;
+  }
+
+  .nav-links li {
+    width: 100%;
+    animation: none;
+  }
+
+  .nav-links li a {
+    line-height: normal;
+    font-size: 1.1rem;
+    display: block;
+    padding: 12px 0;
+  }
+
+  .nav-actions {
+    display: none; /* Hide actions in navbar on mobile, or move them into nav-links */
+  }
+  
+  .nav-links .nav-actions-mobile {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 20px;
+    gap: 15px;
+  }
 }
 
 .btn-nav-ghost {
@@ -312,6 +393,29 @@ body {
 }
 
 .footer-col ul li a:hover { color: var(--primary); }
+
+@media (max-width: 1024px) {
+  .footer-top-inner {
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 32px;
+  }
+}
+
+@media (max-width: 768px) {
+  .footer-top-inner {
+    grid-template-columns: 1fr 1fr;
+  }
+  .footer-brand {
+    grid-column: 1 / -1;
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-top-inner {
+    grid-template-columns: 1fr;
+  }
+}
 
 /* Social bar */
 .footer-social-bar {

@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HealthSync | Smart Hospital Queue Management</title>
-    <meta name="description" content="HealthSync streamlines hospital patient flow with intelligent digital token management, multi-doctor queues, and real-time WhatsApp notifications.">
+    <title>MediQ | Smart Hospital Queue Management</title>
+    <meta name="description" content="MediQ streamlines hospital patient flow with intelligent digital token management, multi-doctor queues, and real-time WhatsApp notifications.">
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -502,9 +502,76 @@
         }
 
         .footer-logo i { color: #60c2f7; }
+        .footer-copy { font-size: 0.85rem; }
 
-        .footer-copy {
-            font-size: 0.85rem;
+        /* ── Responsive Adjustments ── */
+        @media (max-width: 991px) {
+            .hero-section .container {
+                grid-template-columns: 1fr;
+                gap: 40px;
+                padding-bottom: 40px;
+                align-items: center;
+                text-align: center;
+            }
+
+            .hospital-search-panel {
+                order: 2;
+                align-self: center;
+                width: 100%;
+                max-width: 500px;
+                margin: 0 auto;
+            }
+
+            .hero-inner {
+                order: 1;
+                align-self: center;
+            }
+
+            .hero-subtitle {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .hero-cta {
+                justify-content: center;
+            }
+
+            .stats-row {
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+            }
+
+            .stat-item {
+                border-right: none;
+                padding: 15px;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .steps-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .steps-grid::before {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -518,23 +585,27 @@
 
             <!-- LEFT: Logo -->
             <a href="index.html" class="logo">
-                <i data-lucide="shield-check"></i> HealthSync
+                <i data-lucide="shield-check"></i> Medi<span class="logo-accent">Q</span>
             </a>
 
             <!-- CENTER: Navigation Links -->
             <ul class="nav-links">
-                <li><a href="#home" class="active">Home</a></li>
-                <li><a href="#services">Services</a></li>
-                <li><a href="#how">How It Works</a></li>
-                <li><a href="#help">Help</a></li>
-                <li><a href="#settings">Settings</a></li>
+                <li><a href="#home" class="active" data-i18n="nav_home">Home</a></li>
+                <li><a href="#services" data-i18n="nav_services">Services</a></li>
+                <li><a href="#how" data-i18n="nav_how">How It Works</a></li>
+                <li><a href="#help" data-i18n="nav_help">Help</a></li>
+                <li><a href="#settings" data-i18n="nav_settings">Settings</a></li>
             </ul>
 
             <!-- RIGHT: Actions -->
             <div class="nav-actions">
-                <a href="auth.html?role=doctor" class="btn-nav-ghost">Doctor Registration</a>
-                <a href="auth.html?role=admin" class="btn-primary">Hospital Login</a>
+                <button onclick="openModal('authChoiceModal')" class="btn-primary" data-i18n="login">Login</button>
             </div>
+
+            <!-- MOBILE TOGGLE -->
+            <button class="menu-toggle" id="menuToggle">
+                <i data-lucide="menu"></i>
+            </button>
 
         </div>
     </nav>
@@ -545,8 +616,8 @@
 
             <!-- LEFT: Hospital Search -->
             <div class="hospital-search-panel fade-up">
-                <p class="search-label">Find Your Hospital</p>
-                <p class="search-sub">Search by hospital name to get your digital token</p>
+                <p class="search-label" data-i18n="find_hosp">Find Your Hospital</p>
+                <p class="search-sub" data-i18n="search_sub">Search by hospital name to get your digital token</p>
 
                 <div class="search-box-wrap">
                     <div class="search-input-row">
@@ -567,25 +638,25 @@
 
             <!-- RIGHT: Hero content -->
             <div class="hero-inner fade-up" style="animation-delay:0.15s">
-                <div class="hero-eyebrow">
+                <div class="hero-eyebrow" data-i18n="hero_eyebrow">
                     <i data-lucide="activity" size="13"></i>
                     Next-Gen Hospital Management
                 </div>
-                <h1 class="hero-title">
+                <h1 class="hero-title" data-i18n="hero_title">
                     Smarter Queues.<br>
                     <span>Healthier Hospitals.</span>
                 </h1>
-                <p class="hero-subtitle">
-                    HealthSync replaces paper tokens and crowded waiting rooms with an intelligent digital queue system — giving doctors control and patients peace of mind.
+                <p class="hero-subtitle" data-i18n="hero_subtitle">
+                    MediQ replaces paper tokens and crowded waiting rooms with an intelligent digital queue system — giving doctors control and patients peace of mind.
                 </p>
                 <div class="hero-cta">
                     <a href="auth.html?role=admin" class="btn-cta-primary">
                         <i data-lucide="building-2" size="18"></i>
-                        Register Your Hospital
+                        <span data-i18n="reg_hosp">Register Your Hospital</span>
                     </a>
                     <a href="portal.html" class="btn-cta-secondary">
                         <i data-lucide="ticket" size="18"></i>
-                        Get a Token Demo
+                        <span data-i18n="get_demo">Get a Token Demo</span>
                     </a>
                 </div>
             </div>
@@ -599,19 +670,19 @@
             <div class="stats-row">
                 <div class="stat-item">
                     <div class="value">500+</div>
-                    <div class="label">Hospitals Enrolled</div>
+                    <div class="label" data-i18n="hosp_enrolled">Hospitals Enrolled</div>
                 </div>
                 <div class="stat-item">
                     <div class="value">1.2M</div>
-                    <div class="label">Tokens Issued</div>
+                    <div class="label" data-i18n="tokens_issued">Tokens Issued</div>
                 </div>
                 <div class="stat-item">
                     <div class="value">98%</div>
-                    <div class="label">Patient Satisfaction</div>
+                    <div class="label" data-i18n="patient_sat">Patient Satisfaction</div>
                 </div>
                 <div class="stat-item">
                     <div class="value">&lt;1s</div>
-                    <div class="label">Queue Update Latency</div>
+                    <div class="label" data-i18n="queue_latency">Queue Update Latency</div>
                 </div>
             </div>
         </div>
@@ -620,18 +691,18 @@
     <!-- ── SERVICES ── -->
     <section class="services-section" id="services">
         <div class="container">
-            <span class="section-tag">Our Services</span>
-            <h2 class="section-title">Everything a Modern<br>Hospital Needs</h2>
+            <span class="section-tag" data-i18n="our_services">Our Services</span>
+            <h2 class="section-title" data-i18n="services_title">Everything a Modern<br>Hospital Needs</h2>
 
             <p class="section-intro">
-                HealthSync provides hospitals with a fully integrated digital token management ecosystem. 
+                MediQ provides hospitals with a fully integrated digital token management ecosystem. 
                 At its core, the system eliminates physical token counters and replaces them with intelligent, 
                 cloud-backed queuing technology. Each patient receives a unique digital token upon arrival — 
                 either via the patient portal or directly at a facility kiosk — and is automatically 
                 notified in real time as their turn approaches, reducing waiting room congestion by up to 70%.
             </p>
             <p class="section-intro">
-                Beyond token issuance, HealthSync delivers a comprehensive suite of tools for hospital administrators 
+                Beyond token issuance, MediQ delivers a comprehensive suite of tools for hospital administrators 
                 and clinical staff. Admins can onboard multiple doctors under a single facility, assign room numbers, 
                 define specializations, and monitor live queue metrics from a unified command dashboard. 
                 Doctors receive a dedicated clinical view to call, skip, or complete patient appointments with one 
@@ -677,29 +748,29 @@
     <!-- ── HOW IT WORKS ── -->
     <section class="how-section" id="how">
         <div class="container">
-            <span class="section-tag">The Process</span>
-            <h2 class="section-title">How HealthSync Works</h2>
+            <span class="section-tag" data-i18n="the_process">The Process</span>
+            <h2 class="section-title" data-i18n="how_it_works">How MediQ Works</h2>
 
             <div class="steps-grid">
                 <div class="step-item">
                     <div class="step-number">1</div>
-                    <h4>Hospital Registers</h4>
-                    <p>Admin creates a facility account with hospital name, email, and location via Google Maps.</p>
+                    <h4 data-i18n="step1_title">Hospital Registers</h4>
+                    <p data-i18n="step1_desc">Admin creates a facility account with hospital name, email, and location via Google Maps.</p>
                 </div>
                 <div class="step-item">
                     <div class="step-number">2</div>
-                    <h4>Doctors Join</h4>
-                    <p>Doctors verify using hospital credentials, then complete their professional profile.</p>
+                    <h4 data-i18n="step2_title">Doctors Join</h4>
+                    <p data-i18n="step2_desc">Doctors verify using hospital credentials, then complete their professional profile.</p>
                 </div>
                 <div class="step-item">
                     <div class="step-number">3</div>
-                    <h4>Patient Gets Token</h4>
-                    <p>Patient selects a doctor and receives an instant digital token via the patient portal.</p>
+                    <h4 data-i18n="step3_title">Patient Gets Token</h4>
+                    <p data-i18n="step3_desc">Patient selects a doctor and receives an instant digital token via the patient portal.</p>
                 </div>
                 <div class="step-item">
                     <div class="step-number">4</div>
-                    <h4>Real-Time Updates</h4>
-                    <p>Doctor calls patients from their dashboard. Patient gets a WhatsApp alert instantly.</p>
+                    <h4 data-i18n="step4_title">Real-Time Updates</h4>
+                    <p data-i18n="step4_desc">Doctor calls patients from their dashboard. Patient gets a WhatsApp alert instantly.</p>
                 </div>
             </div>
         </div>
@@ -714,7 +785,7 @@
                 <!-- Brand -->
                 <div class="footer-brand">
                     <div class="footer-logo">
-                        <i data-lucide="shield-check"></i> HealthSync
+                        <i data-lucide="shield-check"></i> Medi<span class="logo-accent">Q</span>
                     </div>
                     <p class="footer-tagline">
                         Intelligent digital queue management for modern hospitals. Reduce wait times, improve patient care.
@@ -749,7 +820,7 @@
                 <div class="footer-col">
                     <h5>Company</h5>
                     <ul>
-                        <li><a href="#">About HealthSync</a></li>
+                        <li><a href="#">About Medi<span class="logo-accent">Q</span></a></li>
                         <li><a href="#">Careers</a></li>
                         <li><a href="#">Blog</a></li>
                         <li><a href="#">Press Kit</a></li>
@@ -788,7 +859,7 @@
         <!-- Bottom: copyright bar -->
         <div class="footer-bottom-bar">
             <div class="container footer-bottom-inner">
-                <span class="footer-copy">© 2026 HealthSync Technologies Pvt. Ltd. All rights reserved.</span>
+                <span class="footer-copy">© 2026 MediQ Technologies Pvt. Ltd. All rights reserved.</span>
                 <div class="footer-bottom-links">
                     <a href="#">Privacy Policy</a>
                     <a href="#">Terms of Use</a>
@@ -818,30 +889,55 @@
             </div>
         </div>
     </div>
+    <!-- ── Auth Choice Modal ── -->
+    <div id="authChoiceModal" class="hs-modal-overlay" onclick="closeModal('authChoiceModal')">
+        <div class="hs-modal" onclick="event.stopPropagation()">
+            <button class="hs-modal-close" onclick="closeModal('authChoiceModal')"><i data-lucide="x" size="20"></i></button>
+            <div class="hs-modal-icon" style="background:rgba(14,165,233,0.1)"><i data-lucide="lock" size="28" style="color:var(--primary)"></i></div>
+            <h2 class="hs-modal-title" data-i18n="auth_choice_title">Portal Access</h2>
+            <p class="hs-modal-sub" data-i18n="auth_choice_sub">Choose your access level to proceed</p>
+            
+            <div class="hs-auth-note">
+                <i data-lucide="info" size="16"></i>
+                <p data-i18n="patient_note"><strong>Note:</strong> Patients do not need to login or register. Please search for your hospital to get a token.</p>
+            </div>
+
+            <div class="hs-help-grid">
+                <a href="auth.html?role=admin" class="hs-help-card" style="flex-direction:column; text-align:center; padding:32px;">
+                    <i data-lucide="building-2" size="32"></i>
+                    <span data-i18n="hosp_access">Hospital Registration / Login</span>
+                </a>
+                <a href="auth.html?role=doctor" class="hs-help-card" style="flex-direction:column; text-align:center; padding:32px;">
+                    <i data-lucide="stethoscope" size="32"></i>
+                    <span data-i18n="dr_access">Doctor Registration / Login</span>
+                </a>
+            </div>
+        </div>
+    </div>
 
     <!-- ── Settings Modal ── -->
     <div id="settingsModal" class="hs-modal-overlay" onclick="closeModal('settingsModal')">
         <div class="hs-modal" onclick="event.stopPropagation()">
             <button class="hs-modal-close" onclick="closeModal('settingsModal')"><i data-lucide="x" size="20"></i></button>
             <div class="hs-modal-icon" style="background:rgba(249,115,22,0.1)"><i data-lucide="settings" size="28" style="color:var(--primary)"></i></div>
-            <h2 class="hs-modal-title">Settings</h2>
-            <p class="hs-modal-sub">Manage your HealthSync preferences</p>
+            <h2 class="hs-modal-title" data-i18n="settings_title">Settings</h2>
+            <p class="hs-modal-sub" data-i18n="settings_sub">Manage your MediQ preferences</p>
             <div class="hs-settings-list">
                 <div class="hs-setting-row">
-                    <div><strong>Language</strong><p>Choose your display language</p></div>
-                    <select class="hs-select"><option>English</option><option>Hindi</option><option>Tamil</option></select>
+                    <div><strong data-i18n="language">Language</strong><p data-i18n="lang_desc">Choose your display language</p></div>
+                    <select class="hs-select" id="languageSelect"><option>English</option><option>Hindi</option><option>Tamil</option><option>Kannada</option></select>
                 </div>
                 <div class="hs-setting-row">
-                    <div><strong>Notifications</strong><p>WhatsApp &amp; SMS alerts</p></div>
+                    <div><strong data-i18n="notifications">Notifications</strong><p data-i18n="notif_desc">WhatsApp &amp; SMS alerts</p></div>
                     <label class="hs-toggle"><input type="checkbox" checked><span></span></label>
                 </div>
                 <div class="hs-setting-row">
-                    <div><strong>Dark Mode</strong><p>Switch to dark interface</p></div>
+                    <div><strong data-i18n="dark_mode">Dark Mode</strong><p data-i18n="dark_desc">Switch to dark interface</p></div>
                     <label class="hs-toggle"><input type="checkbox"><span></span></label>
                 </div>
                 <div class="hs-setting-row">
-                    <div><strong>Account</strong><p>Login or register</p></div>
-                    <a href="auth.html" class="hs-setting-link">Open <i data-lucide="arrow-right" size="14"></i></a>
+                    <div><strong data-i18n="account">Account</strong><p data-i18n="acc_desc">Login or register</p></div>
+                    <a href="auth.html" class="hs-setting-link"><span data-i18n="open">Open</span> <i data-lucide="arrow-right" size="14"></i></a>
                 </div>
             </div>
         </div>
@@ -923,6 +1019,22 @@
         }
         .hs-help-card:hover { border-color: var(--primary); color: var(--primary); background: rgba(249,115,22,0.04); }
         .hs-help-card i { color: var(--primary); flex-shrink: 0; }
+        
+        .hs-auth-note {
+            background: #f0f9ff;
+            border: 1px solid #e0f2fe;
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            color: #0369a1;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+        .hs-auth-note i { flex-shrink: 0; margin-top: 2px; }
+        .hs-auth-note p { margin: 0; }
+        
         /* Settings list */
         .hs-settings-list { display: flex; flex-direction: column; gap: 4px; }
         .hs-setting-row {
@@ -978,14 +1090,41 @@
     <script>
         lucide.createIcons();
 
+        // Mobile Menu Toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const navContainer = document.querySelector('.nav-links');
+        const menuIcon = menuToggle.querySelector('i');
+
+        menuToggle.addEventListener('click', () => {
+            navContainer.classList.toggle('active');
+            const isActive = navContainer.classList.contains('active');
+            menuIcon.setAttribute('data-lucide', isActive ? 'x' : 'menu');
+            lucide.createIcons();
+        });
+
+        // Close menu on link click
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navContainer.classList.remove('active');
+                menuIcon.setAttribute('data-lucide', 'menu');
+                lucide.createIcons();
+            });
+        });
+
         function openModal(id) {
-            document.getElementById(id).classList.add('open');
-            document.body.style.overflow = 'hidden';
+            const modal = document.getElementById(id);
+            if (modal) {
+                modal.classList.add('open');
+                document.body.style.overflow = 'hidden';
+            }
         }
 
         function closeModal(id) {
-            document.getElementById(id).classList.remove('open');
-            document.body.style.overflow = '';
+            const modal = document.getElementById(id);
+            if (modal) {
+                modal.classList.remove('open');
+                document.body.style.overflow = '';
+            }
         }
 
         // Keyboard close
@@ -1000,27 +1139,37 @@
         document.querySelectorAll('.nav-links li a').forEach(link => {
             link.addEventListener('click', function(e) {
                 const href = this.getAttribute('href');
-                if (href === '#help') { e.preventDefault(); openModal('helpModal'); }
-                else if (href === '#settings') { e.preventDefault(); openModal('settingsModal'); }
-                else {
+                if (href === '#help') { 
+                    e.preventDefault(); 
+                    openModal('helpModal'); 
+                }
+                else if (href === '#settings') { 
+                    e.preventDefault(); 
+                    openModal('settingsModal'); 
+                }
+                else if (href.startsWith('#')) {
                     const target = document.querySelector(href);
-                    if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+                    if (target) { 
+                        e.preventDefault(); 
+                        target.scrollIntoView({ behavior: 'smooth' }); 
+                    }
                 }
             });
         });
 
         // Active nav link on scroll
         const sections = document.querySelectorAll('section[id]');
-        const navLinks = document.querySelectorAll('.nav-links li a');
+        const allNavLinks = document.querySelectorAll('.nav-links li a');
 
         window.addEventListener('scroll', () => {
             let current = '';
             sections.forEach(section => {
-                if (window.scrollY >= section.offsetTop - 100) {
+                const sectionTop = section.offsetTop;
+                if (window.scrollY >= sectionTop - 100) {
                     current = section.getAttribute('id');
                 }
             });
-            navLinks.forEach(link => {
+            allNavLinks.forEach(link => {
                 link.classList.remove('active');
                 if (link.getAttribute('href') === `#${current}`) {
                     link.classList.add('active');
@@ -1043,7 +1192,7 @@
                 return;
             }
 
-            searchDrop.innerHTML = '<div class="search-loading">Searching...</div>';
+            searchDrop.innerHTML = `<div class="search-loading">${t('searching')}</div>`;
             searchDrop.classList.add('open');
 
             searchTimer = setTimeout(() => searchHospitals(q), 300);
@@ -1066,10 +1215,9 @@
         async function searchHospitals(query) {
             try {
                 const { data, error } = await window.supabaseClient
-                    .from('profiles')
-                    .select('id, full_name, location, email')
-                    .eq('role', 'admin')
-                    .ilike('full_name', `%${query}%`)
+                    .from('hospitals')
+                    .select('id, name, address')
+                    .ilike('name', `%${query}%`)
                     .limit(6);
 
                 if (error) throw error;
@@ -1078,20 +1226,20 @@
                     searchDrop.innerHTML = `
                         <div class="search-empty">
                             <i data-lucide="building-2" size="28" style="color:#cbd5e1;margin-bottom:8px"></i>
-                            <p>No hospital found for "<strong>${query}</strong>"</p>
+                            <p>${t('no_hospital_found')} "<strong>${query}</strong>"</p>
                         </div>`;
                     lucide.createIcons();
                     return;
                 }
 
                 searchDrop.innerHTML = data.map(h => `
-                    <a href="portal.html?hospital_id=${h.id}" class="search-result-item">
+                    <a href="portal.html?hosp=${h.id}" class="search-result-item">
                         <div class="search-result-icon">
                             <i data-lucide="building-2" size="20"></i>
                         </div>
                         <div class="search-result-info">
-                            <strong>${h.full_name}</strong>
-                            <span>${h.location || 'Location not set'}</span>
+                            <strong>${h.name}</strong>
+                            <span>${h.address || t('location_not_set')}</span>
                         </div>
                         <i data-lucide="arrow-right" size="16" style="color:#cbd5e1;margin-left:auto;flex-shrink:0"></i>
                     </a>
@@ -1099,9 +1247,10 @@
                 lucide.createIcons();
 
             } catch (err) {
-                searchDrop.innerHTML = `<div class="search-empty">Could not connect. Check your internet connection.</div>`;
+                searchDrop.innerHTML = `<div class="search-empty">${t('could_not_connect')}</div>`;
             }
         }
     </script>
+    <script src="js/core/translations.js"></script>
 </body>
 </html>

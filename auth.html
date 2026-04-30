@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Authorize | HealthSync Access</title>
+    <title>Authorize | MediQ Access</title>
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,8 +13,6 @@
     <!-- Icons & Services -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <!-- Google Maps API (Placeholder Key) -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places"></script>
     
     <!-- Styles -->
     <link rel="stylesheet" href="css/main.css">
@@ -34,7 +32,7 @@
             border-radius: 32px;
             width: 100%;
             max-width: 520px;
-            padding: 56px;
+            padding: 48px;
             box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.7);
             position: relative;
         }
@@ -45,7 +43,7 @@
             background: rgba(15, 23, 42, 0.5);
             padding: 6px;
             border-radius: 100px;
-            margin-bottom: 40px;
+            margin-bottom: 32px;
             border: 1px solid var(--glass-border);
         }
 
@@ -75,15 +73,15 @@
         .form-section.active { display: block; }
 
         .input-group {
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
 
         .input-group label {
             display: block;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 700;
             color: var(--text-muted);
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
@@ -92,8 +90,8 @@
             width: 100%;
             background: rgba(30, 41, 59, 0.5);
             border: 1px solid var(--glass-border);
-            border-radius: 14px;
-            padding: 14px 18px;
+            border-radius: 12px;
+            padding: 12px 16px;
             color: #fff;
             font-family: inherit;
             transition: all 0.2s;
@@ -106,23 +104,21 @@
             box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
         }
 
-        .step-indicator {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 24px;
+        .toggle-auth-type {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
         }
 
-        .step-dot {
-            height: 4px;
-            flex: 1;
-            background: var(--glass-border);
-            border-radius: 100px;
+        .toggle-auth-type a {
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: none;
+            margin-left: 6px;
         }
 
-        .step-dot.active {
-            background: var(--primary);
-            box-shadow: 0 0 10px var(--primary);
-        }
+        .hidden { display: none !important; }
 
         .verification-badge {
             background: rgba(14, 165, 233, 0.1);
@@ -136,6 +132,27 @@
             gap: 10px;
             border: 1px solid rgba(14, 165, 233, 0.2);
         }
+
+        @media (max-width: 768px) {
+            .auth-card-elite {
+                padding: 32px 24px;
+                border-radius: 24px;
+            }
+
+            .auth-tabs {
+                margin-bottom: 24px;
+            }
+
+            .nav-content {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            
+            .nav-content a:last-child {
+                font-size: 0.8rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -147,7 +164,7 @@
     <nav class="navbar scrolled">
         <div class="container nav-content">
             <a href="index.html" class="logo">
-                <i data-lucide="shield-check"></i> HealthSync
+                <i data-lucide="shield-check"></i> Medi<span class="logo-accent">Q</span>
             </a>
             <a href="index.html" style="color: var(--text-muted); text-decoration: none; font-weight: 600;">Back to Home</a>
         </div>
@@ -155,184 +172,310 @@
 
     <div class="auth-wrapper">
         <div class="auth-card-elite">
-            <div class="auth-tabs">
-                <button class="auth-tab active" onclick="switchTab('hospital')">Hospital Node</button>
-                <button class="auth-tab" onclick="switchTab('doctor')">Doctor Portal</button>
+            <div class="hs-auth-note" style="margin-bottom:24px; background:rgba(14,165,233,0.1); border:1px solid rgba(14,165,233,0.2); color:var(--primary); border-radius:16px; padding:16px; display:flex; gap:12px; font-size:0.85rem;">
+                <i data-lucide="info" size="18" style="flex-shrink:0;"></i>
+                <p data-i18n="patient_note" style="margin:0;"><strong>Note:</strong> Patients do not need to login or register here. Use the search on the home page.</p>
+            </div>
+            
+            <div class="auth-tabs" id="authTabs">
+                <button class="auth-tab active" onclick="switchRole('hospital')" id="tabHosp">Hospital</button>
+                <button class="auth-tab" onclick="switchRole('doctor')" id="tabDoc">Doctor</button>
             </div>
 
-            <!-- HOSPITAL REGISTRATION -->
-            <div id="hospitalForm" class="form-section active">
-                <h2 style="font-size: 2rem; margin-bottom: 8px;">Hospital Registry</h2>
-                <p style="color: var(--text-muted); margin-bottom: 32px;">Initialize a new medical facility node.</p>
-                
-                <form id="hregForm">
-                    <div class="input-group">
-                        <label>Facility Name</label>
-                        <input type="text" id="hName" required placeholder="General City Hospital">
+            <!-- HOSPITAL SECTION -->
+            <div id="hospitalSection" class="form-section active">
+                <!-- Login Form -->
+                <div id="hospLogin">
+                    <h2 style="font-size: 1.8rem; margin-bottom: 8px;">Hospital Login</h2>
+                    <p style="color: var(--text-muted); margin-bottom: 28px;">Access your facility dashboard.</p>
+                    <form onsubmit="handleHospLogin(event)">
+                        <div class="input-group">
+                            <label>Email Address</label>
+                            <input type="email" id="hlEmail" required placeholder="admin@hospital.com">
+                        </div>
+                        <div class="input-group">
+                            <label>Password</label>
+                            <input type="password" id="hlPass" required placeholder="••••••••">
+                        </div>
+                        <button type="submit" class="btn-primary" style="width: 100%; padding: 14px;">Sign In</button>
+                    </form>
+                    <div class="toggle-auth-type">
+                        Don't have a facility node? <a href="#" onclick="toggleHospAuth('reg')">Register Now</a>
                     </div>
-                    <div class="input-group">
-                        <label>Admin Email</label>
-                        <input type="email" id="hEmail" required placeholder="admin@hospital.com">
-                    </div>
-                    <div class="input-group">
-                        <label>Secure Password</label>
-                        <input type="password" id="hPass" required placeholder="••••••••">
-                    </div>
-                    <div class="input-group">
-                        <label>Location (Google Maps)</label>
-                        <input type="text" id="hLocation" placeholder="Search for location...">
-                    </div>
-                    <button type="submit" class="btn-primary" style="width: 100%; padding: 16px;">Initialize Facility</button>
-                </form>
-            </div>
-
-            <!-- DOCTOR REGISTRATION -->
-            <div id="doctorForm" class="form-section">
-                <div id="docStep1">
-                    <h2 style="font-size: 2rem; margin-bottom: 8px;">Doctor Verification</h2>
-                    <p style="color: var(--text-muted); margin-bottom: 32px;">Verify your hospital affiliation to proceed.</p>
-                    <div class="step-indicator">
-                        <div class="step-dot active"></div>
-                        <div class="step-dot"></div>
-                    </div>
-                    
-                    <div class="verification-badge">
-                        <i data-lucide="shield-alert" size="18"></i>
-                        Requires Hospital Admin Credentials
-                    </div>
-
-                    <div class="input-group">
-                        <label>Hospital Email</label>
-                        <input type="email" id="hVerifyEmail" placeholder="admin@hospital.com">
-                    </div>
-                    <div class="input-group">
-                        <label>Hospital Password</label>
-                        <input type="password" id="hVerifyPass" placeholder="••••••••">
-                    </div>
-                    <button class="btn-primary" style="width: 100%; padding: 16px;" onclick="verifyHospital()">Verify Affiliation</button>
                 </div>
 
-                <div id="docStep2" style="display: none;">
-                    <h2 style="font-size: 2rem; margin-bottom: 8px;">Create Account</h2>
-                    <p style="color: var(--text-muted); margin-bottom: 32px;">Credentials for your professional portal.</p>
-                    <div class="step-indicator">
-                        <div class="step-dot active"></div>
-                        <div class="step-dot active"></div>
+                <!-- Registration Form -->
+                <div id="hospReg" class="hidden">
+                    <h2 style="font-size: 1.8rem; margin-bottom: 8px;">Hospital Registry</h2>
+                    <p style="color: var(--text-muted); margin-bottom: 28px;">Initialize your medical facility account.</p>
+                    <form onsubmit="handleHospReg(event)">
+                        <div class="input-group">
+                            <label>Facility Name</label>
+                            <input type="text" id="hrName" required placeholder="General City Hospital">
+                        </div>
+                        <div class="input-group">
+                            <label>Admin Email</label>
+                            <input type="email" id="hrEmail" required placeholder="admin@hospital.com">
+                        </div>
+                        <div class="input-group">
+                            <label>Secure Password</label>
+                            <input type="password" id="hrPass" required placeholder="••••••••">
+                        </div>
+                        <div class="input-group">
+                            <label>Confirm Password</label>
+                            <input type="password" id="hrConfirm" required placeholder="••••••••">
+                        </div>
+                        <button type="submit" class="btn-primary" style="width: 100%; padding: 14px;">Create Registry Account</button>
+                    </form>
+                    <div class="toggle-auth-type">
+                        Already registered? <a href="#" onclick="toggleHospAuth('login')">Sign In</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DOCTOR SECTION -->
+            <div id="doctorSection" class="form-section">
+                <div id="docAuth">
+                    <h2 style="font-size: 1.8rem; margin-bottom: 8px;">Doctor Portal</h2>
+                    <p style="color: var(--text-muted); margin-bottom: 28px;">Manage your patients and professional profile.</p>
+                    
+                    <div id="docLogin">
+                        <form onsubmit="handleDocLogin(event)">
+                            <div class="input-group">
+                                <label>Doctor Email</label>
+                                <input type="email" id="dlEmail" required placeholder="doctor@hospital.com">
+                            </div>
+                            <div class="input-group">
+                                <label>Password</label>
+                                <input type="password" id="dlPass" required placeholder="••••••••">
+                            </div>
+                            <button type="submit" class="btn-primary" style="width: 100%; padding: 14px;">Portal Login</button>
+                        </form>
+                        <div class="toggle-auth-type">
+                            New here? <a href="#" onclick="toggleDocAuth('reg')">Join a Hospital</a>
+                        </div>
                     </div>
 
-                    <div class="input-group">
-                        <label>Professional Email</label>
-                        <input type="email" id="docEmail" placeholder="doctor@hospital.com">
+                    <div id="docStep1" class="hidden">
+                        <div class="verification-badge">
+                            <i data-lucide="shield-alert" size="18"></i>
+                            Requires Hospital Admin Verification
+                        </div>
+                        <div class="input-group">
+                            <label>Hospital Admin Email</label>
+                            <input type="email" id="hVerifyEmail" placeholder="admin@hospital.com">
+                        </div>
+                        <div class="input-group">
+                            <label>Hospital Admin Password</label>
+                            <input type="password" id="hVerifyPass" placeholder="••••••••">
+                        </div>
+                        <button class="btn-primary" style="width: 100%; padding: 14px;" onclick="verifyHospital()">Verify & Proceed</button>
+                        <div class="toggle-auth-type">
+                            Already have an account? <a href="#" onclick="toggleDocAuth('login')">Sign In</a>
+                        </div>
                     </div>
-                    <div class="input-group">
-                        <label>Portal Password</label>
-                        <input type="password" id="docPass" placeholder="••••••••">
+
+                    <div id="docStep2" class="hidden">
+                         <h2 style="font-size: 1.8rem; margin-bottom: 8px;">Create Account</h2>
+                         <form onsubmit="handleDocReg(event)">
+                            <div class="input-group">
+                                <label>Your Name</label>
+                                <input type="text" id="drName" required placeholder="Dr. John Doe">
+                            </div>
+                            <div class="input-group">
+                                <label>Professional Email</label>
+                                <input type="email" id="drEmail" required placeholder="doctor@hospital.com">
+                            </div>
+                            <div class="input-group">
+                                <label>Portal Password</label>
+                                <input type="password" id="drPass" required placeholder="••••••••">
+                            </div>
+                            <button type="submit" class="btn-primary" style="width: 100%; padding: 14px;">Finalize Doctor Portal</button>
+                         </form>
                     </div>
-                    <button class="btn-primary" style="width: 100%; padding: 16px;" onclick="registerDoctor()">Create Doctor Account</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script src="js/services/supabase.js"></script>
+    <script src="js/core/translations.js"></script>
     <script>
         lucide.createIcons();
 
-        // Google Maps Autocomplete
-        function initAutocomplete() {
-            const input = document.getElementById('hLocation');
-            if (input) new google.maps.places.Autocomplete(input);
+        const params = new URLSearchParams(window.location.search);
+        const role = params.get('role');
+        if (role === 'admin') {
+            document.getElementById('authTabs').classList.add('hidden');
+            switchRole('hospital');
+        } else if (role === 'doctor') {
+            document.getElementById('authTabs').classList.add('hidden');
+            switchRole('doctor');
         }
-        google.maps.event.addDomListener(window, 'load', initAutocomplete);
 
-        function switchTab(role) {
+        function switchRole(role) {
             document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.form-section').forEach(f => f.classList.remove('active'));
-            
             if (role === 'hospital') {
-                document.querySelector('.auth-tab:first-child').classList.add('active');
-                document.getElementById('hospitalForm').classList.add('active');
+                document.getElementById('tabHosp').classList.add('active');
+                document.getElementById('hospitalSection').classList.add('active');
             } else {
-                document.querySelector('.auth-tab:last-child').classList.add('active');
-                document.getElementById('doctorForm').classList.add('active');
+                document.getElementById('tabDoc').classList.add('active');
+                document.getElementById('doctorSection').classList.add('active');
             }
         }
 
+        function toggleHospAuth(type) {
+            if (type === 'reg') {
+                document.getElementById('hospLogin').classList.add('hidden');
+                document.getElementById('hospReg').classList.remove('hidden');
+            } else {
+                document.getElementById('hospReg').classList.add('hidden');
+                document.getElementById('hospLogin').classList.remove('hidden');
+            }
+        }
+
+        function toggleDocAuth(type) {
+            if (type === 'reg') {
+                document.getElementById('docLogin').classList.add('hidden');
+                document.getElementById('docStep1').classList.remove('hidden');
+            } else {
+                document.getElementById('docStep1').classList.add('hidden');
+                document.getElementById('docStep2').classList.add('hidden');
+                document.getElementById('docLogin').classList.remove('hidden');
+            }
+        }
+
+        // --- HOSPITAL AUTH ---
+
+        async function handleHospLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('hlEmail').value;
+            const pass = document.getElementById('hlPass').value;
+            const { data, error } = await window.supabaseClient.auth.signInWithPassword({ email, password: pass });
+            if (error) return alert(error.message);
+
+            // Verify they have a hospital record
+            const { data: hosp } = await window.supabaseClient
+                .from('hospitals')
+                .select('id')
+                .eq('admin_id', data.user.id)
+                .single();
+            
+            if (!hosp) {
+                await window.supabaseClient.auth.signOut();
+                return alert("This account is not a registered hospital admin.");
+            }
+
+            window.location.href = 'dashboards/admin.html';
+        }
+
+        async function handleHospReg(e) {
+            e.preventDefault();
+            const name = document.getElementById('hrName').value;
+            const email = document.getElementById('hrEmail').value;
+            const pass = document.getElementById('hrPass').value;
+            const confirm = document.getElementById('hrConfirm').value;
+
+            if (pass !== confirm) return alert("Passwords do not match.");
+
+            const { data, error } = await window.supabaseClient.auth.signUp({ email, password: pass });
+            if (error) return alert(error.message);
+
+            if (data.user) {
+                // Insert into HOSPITALS table per schema
+                const { error: insertError } = await window.supabaseClient.from('hospitals').insert({
+                    name: name,
+                    hospital_email: email,
+                    admin_id: data.user.id,
+                    onboarding_complete: false
+                });
+
+                if (insertError) {
+                    return alert("Auth successful, but hospital record creation failed: " + insertError.message);
+                }
+
+                alert("Hospital registered! If you haven't received a confirmation email, check your spam. Redirecting to setup portal...");
+                window.location.href = 'dashboards/admin.html';
+            }
+        }
+
+        // --- DOCTOR AUTH ---
+
+        async function handleDocLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('dlEmail').value;
+            const pass = document.getElementById('dlPass').value;
+            const { data, error } = await window.supabaseClient.auth.signInWithPassword({ email, password: pass });
+            if (error) return alert(error.message);
+
+            // Verify they have a profile record
+            const { data: profile } = await window.supabaseClient
+                .from('profiles')
+                .select('id')
+                .eq('id', data.user.id)
+                .single();
+            
+            if (!profile) {
+                await window.supabaseClient.auth.signOut();
+                return alert("No doctor profile found for this account.");
+            }
+
+            window.location.href = 'dashboards/doctor.html';
+        }
+
+        let verifiedHospitalId = null;
         async function verifyHospital() {
             const email = document.getElementById('hVerifyEmail').value;
             const pass = document.getElementById('hVerifyPass').value;
-
-            // Log in with hospital credentials to verify
-            const { data, error } = await window.supabaseClient.auth.signInWithPassword({
-                email, password: pass
-            });
-
-            if (error) return alert("Hospital verification failed: " + error.message);
+            const { data, error } = await window.supabaseClient.auth.signInWithPassword({ email, password: pass });
+            if (error) return alert("Hospital verification failed.");
             
-            // If verified, store hospital context and show step 2
-            window.verifiedHospitalId = data.user.id;
-            document.getElementById('docStep1').style.display = 'none';
-            document.getElementById('docStep2').style.display = 'block';
-            
-            // Sign out of hospital account so we can create doctor account
+            // Get the hospital ID linked to this admin
+            const { data: hosp } = await window.supabaseClient
+                .from('hospitals')
+                .select('id')
+                .eq('admin_id', data.user.id)
+                .single();
+
+            if (!hosp) {
+                await window.supabaseClient.auth.signOut();
+                return alert("Verified user is not a hospital admin.");
+            }
+
+            verifiedHospitalId = hosp.id;
             await window.supabaseClient.auth.signOut();
+            document.getElementById('docStep1').classList.add('hidden');
+            document.getElementById('docStep2').classList.remove('hidden');
         }
 
-        async function registerDoctor() {
-            const email = document.getElementById('docEmail').value;
-            const pass = document.getElementById('docPass').value;
-
-            const { data, error } = await window.supabaseClient.auth.signUp({
-                email, password: pass
-            });
-
-            if (error) return alert(error.message);
-
-            if (data.user) {
-                // Initial profile creation linked to hospital
-                const { error: pError } = await window.supabaseClient
-                    .from('profiles')
-                    .insert({
-                        id: data.user.id,
-                        email: email,
-                        role: 'doctor',
-                        hospital_id: window.verifiedHospitalId,
-                        onboarding_complete: false
-                    });
-                
-                if (pError) return alert(pError.message);
-                
-                alert("Account created! Logging in for onboarding...");
-                window.location.href = 'doctor-profile-setup.html';
-            }
-        }
-
-        // Hospital registration logic
-        document.getElementById('hregForm').addEventListener('submit', async (e) => {
+        async function handleDocReg(e) {
             e.preventDefault();
-            const email = document.getElementById('hEmail').value;
-            const pass = document.getElementById('hPass').value;
-            const name = document.getElementById('hName').value;
-            const loc = document.getElementById('hLocation').value;
+            const name = document.getElementById('drName').value;
+            const email = document.getElementById('drEmail').value;
+            const pass = document.getElementById('drPass').value;
 
-            const { data, error } = await window.supabaseClient.auth.signUp({
-                email, password: pass
-            });
-
+            const { data, error } = await window.supabaseClient.auth.signUp({ email, password: pass });
             if (error) return alert(error.message);
 
             if (data.user) {
-                await window.supabaseClient.from('profiles').insert({
+                // Insert into PROFILES table per schema
+                const { error: insertError } = await window.supabaseClient.from('profiles').insert({
                     id: data.user.id,
-                    full_name: name,
+                    name: name,
                     email: email,
-                    role: 'admin',
-                    location: loc
+                    hospital_id: verifiedHospitalId,
+                    onboarding_complete: false
                 });
-                alert("Hospital registered successfully!");
-                window.location.href = 'dashboards/admin.html';
+
+                if (insertError) {
+                    return alert("Auth successful, but doctor profile creation failed: " + insertError.message);
+                }
+
+                alert("Doctor portal active! Check your email for confirmation if required. Redirecting...");
+                window.location.href = 'dashboards/doctor.html';
             }
-        });
+        }
     </script>
 </body>
 </html>

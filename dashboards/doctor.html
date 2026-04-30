@@ -3,192 +3,670 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Doctor Dashboard | HealthSync</title>
+    <title>Doctor Portal | MediQ</title>
+    
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@700;800&display=swap" rel="stylesheet">
+    
+    <!-- Icons & Services -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    
+    <!-- Styles -->
     <link rel="stylesheet" href="../css/main.css">
     <style>
         body {
             background-color: var(--background);
             color: var(--text);
+            overflow-x: hidden;
         }
+
         .dashboard-layout {
             display: grid;
             grid-template-columns: 280px 1fr;
             min-height: 100vh;
         }
+
+        /* ── Sidebar ── */
         .sidebar {
             background: rgba(15, 23, 42, 0.5);
             backdrop-filter: blur(20px);
             border-right: 1px solid var(--glass-border);
             padding: 32px 24px;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            width: 280px;
+            height: 100vh;
+            z-index: 100;
         }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 48px;
+            text-decoration: none;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+        }
+
+        .nav-link.active {
+            background: rgba(14, 165, 233, 0.1);
+            color: var(--primary);
+        }
+
+        .logout-link {
+            margin-top: auto;
+            color: #f87171;
+        }
+
+        .logout-link:hover {
+            background: rgba(248, 113, 113, 0.1);
+            color: #f87171;
+        }
+
+        /* ── Main Content ── */
         .main-content {
-            padding: 40px;
-            background: radial-gradient(circle at top right, rgba(14, 165, 233, 0.05), transparent);
+            margin-left: 280px;
+            padding: 48px;
+            max-width: 1200px;
         }
+
+        .page-header {
+            margin-bottom: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+        }
+
+        .page-title p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* ── Tabs ── */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* ── Stats ── */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 24px;
             margin-bottom: 40px;
         }
+
         .stat-card {
-            background: var(--glass-bg);
+            background: var(--surface);
             backdrop-filter: blur(12px);
-            padding: 24px;
-            border-radius: 20px;
-            border: 1px solid var(--glass-border);
-            transition: transform 0.2s;
-        }
-        .stat-card:hover {
-            transform: translateY(-4px);
-            border-color: var(--primary);
-        }
-        .stat-card h4 {
-            color: var(--text-light);
-            font-size: 0.9rem;
-            margin-bottom: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        .stat-card .value {
-            font-size: 2.5rem;
-            font-weight: 800;
-            background: linear-gradient(to bottom, #fff, #94a3b8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .queue-container {
-            background: var(--glass-bg);
-            backdrop-filter: blur(16px);
-            border-radius: 24px;
             padding: 32px;
+            border-radius: 24px;
             border: 1px solid var(--glass-border);
+            position: relative;
+            overflow: hidden;
         }
+
+        .stat-card h4 {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .stat-card .value {
+            font-size: 3rem;
+            font-weight: 800;
+            font-family: 'Outfit', sans-serif;
+            line-height: 1;
+        }
+
+        /* ── Queue Table ── */
+        .queue-container {
+            background: var(--surface);
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+            padding: 32px;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
         .queue-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 24px;
         }
+
         .queue-table th {
             text-align: left;
             padding: 16px;
-            color: var(--text-light);
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
             border-bottom: 1px solid var(--glass-border);
         }
+
         .queue-table td {
             padding: 20px 16px;
             border-bottom: 1px solid var(--glass-border);
         }
+
+        .queue-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .patient-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .patient-avatar {
+            width: 40px;
+            height: 40px;
+            background: rgba(14, 165, 233, 0.1);
+            color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
         .status-pill {
-            padding: 6px 14px;
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
             border-radius: 100px;
             font-size: 0.75rem;
-            font-weight: 600;
+            font-weight: 700;
             text-transform: uppercase;
+            gap: 6px;
         }
+
         .status-waiting { background: rgba(245, 158, 11, 0.1); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.2); }
         .status-active { background: rgba(14, 165, 233, 0.1); color: #38bdf8; border: 1px solid rgba(14, 165, 233, 0.2); }
         .status-completed { background: rgba(34, 197, 94, 0.1); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.2); }
-        
-        .btn-call {
-            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
-            color: white;
+
+        .btn-action {
+            background: var(--primary);
+            color: #fff;
             border: none;
-            padding: 10px 20px;
-            border-radius: 10px;
+            padding: 8px 16px;
+            border-radius: 8px;
             font-weight: 600;
+            font-size: 0.85rem;
             cursor: pointer;
             transition: all 0.2s;
         }
-        .btn-call:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+
+        .btn-action:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        /* ── Profile Form ── */
+        .profile-container {
+            background: var(--surface);
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+            padding: 40px;
+            max-width: 800px;
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 40px;
+        }
+
+        .avatar-upload {
+            text-align: center;
+        }
+
+        .avatar-preview {
+            width: 180px;
+            height: 180px;
+            border-radius: 24px;
+            background: rgba(30, 41, 59, 0.5);
+            border: 2px dashed var(--glass-border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .avatar-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .avatar-preview i {
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .avatar-preview span {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .form-group input, 
+        .form-group textarea, 
+        .form-group select {
+            width: 100%;
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: #fff;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .form-group input:focus, 
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
+        }
+
+        .treatment-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .tag {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            padding: 4px 12px;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tag button {
+            background: none;
+            border: none;
+            color: #f87171;
+            cursor: pointer;
+            padding: 0;
+            font-size: 1rem;
+        }
+
+        /* ── Animations ── */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── Mobile ── */
+        @media (max-width: 991px) {
+            .dashboard-layout {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                display: none;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 24px 20px;
+                padding-bottom: 100px;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+            .avatar-upload {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        /* ── Mobile Nav ── */
+        .mobile-bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--glass-border);
+            padding: 12px 0;
+            z-index: 1000;
+            justify-content: space-around;
+        }
+
+        @media (max-width: 991px) {
+            .mobile-bottom-nav {
+                display: flex;
+            }
+        }
+
+        .m-nav-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .m-nav-link.active {
+            color: var(--primary);
         }
     </style>
 </head>
 <body>
     <div class="dashboard-layout">
+        <!-- Sidebar -->
         <aside class="sidebar">
-            <h2 class="mb-4" style="color: var(--primary); display: flex; align-items: center; gap: 12px;">
-                <i data-lucide="shield-check"></i> HealthSync
-            </h2>
-            <nav style="margin-top: 40px;">
-                <a href="#" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: rgba(14, 165, 233, 0.1); color: var(--primary); border-radius: 12px; text-decoration: none; font-weight: 600; margin-bottom: 8px;">
-                    <i data-lucide="layout-dashboard" size="20"></i> Dashboard
-                </a>
-                <a href="#" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; color: var(--text-light); text-decoration: none; border-radius: 12px;">
-                    <i data-lucide="users" size="20"></i> Patients
-                </a>
-                <a href="../index.html" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; color: var(--text-light); text-decoration: none; border-radius: 12px; margin-top: auto;">
-                    <i data-lucide="log-out" size="20"></i> Logout
+            <a href="../index.html" class="sidebar-brand">
+                <i data-lucide="shield-check"></i> Medi<span class="logo-accent">Q</span>
+            </a>
+            <nav class="nav-menu">
+                <div class="nav-link active" onclick="switchTab('schedule', this)">
+                    <i data-lucide="calendar"></i> Today's Schedule
+                </div>
+                <div class="nav-link" onclick="switchTab('profile', this)">
+                    <i data-lucide="user-cog"></i> Edit Profile
+                </div>
+                <a href="../index.html" class="nav-link logout-link" onclick="handleLogout(event)">
+                    <i data-lucide="log-out"></i> Logout
                 </a>
             </nav>
         </aside>
 
+        <!-- Main Content -->
         <main class="main-content">
-            <header class="mb-4" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 48px;">
-                <div>
-                    <h1 style="font-size: 2.5rem; margin-bottom: 8px;">Doctor Dashboard</h1>
-                    <p style="color: var(--text-light);">Manage your patient queue for today</p>
+            <div class="page-header">
+                <div class="page-title">
+                    <h1 id="welcomeText">Welcome, Doctor</h1>
+                    <p id="pageSubtitle">Manage your patients for today</p>
                 </div>
-                <div id="doctorProfile" style="text-align: right;">
-                    <strong style="font-size: 1.2rem;">Dr. Vikram</strong>
-                    <p style="color: var(--primary); font-weight: 600;">Room 101</p>
-                </div>
-            </header>
-
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <h4>Total Tokens</h4>
-                    <div class="value" id="totalTokens">0</div>
-                </div>
-                <div class="stat-card">
-                    <h4>Waiting</h4>
-                    <div class="value" id="waitingTokens" style="color: #fbbf24; -webkit-text-fill-color: #fbbf24;">0</div>
-                </div>
-                <div class="stat-card">
-                    <h4>Served</h4>
-                    <div class="value" id="servedTokens" style="color: #4ade80; -webkit-text-fill-color: #4ade80;">0</div>
+                <div id="doctorBrief" style="text-align: right; display: flex; align-items: center; gap: 16px;">
+                    <div>
+                        <strong style="display: block; font-size: 1.1rem;" id="headerDocName">Dr. Loading...</strong>
+                        <span style="color: var(--primary); font-weight: 600;" id="headerSpecialty">General</span>
+                    </div>
+                    <div id="headerAvatar" class="patient-avatar" style="width: 50px; height: 50px;">D</div>
                 </div>
             </div>
 
-            <div class="queue-container">
-                <h3 style="font-size: 1.5rem;">Current Queue</h3>
-                <table class="queue-table">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Patient Name</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="queueBody">
-                        <!-- Tokens will be loaded here -->
-                    </tbody>
-                </table>
-            </div>
+            <!-- Tab: Today's Schedule -->
+            <section id="scheduleTab" class="tab-content active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h4>Total Patients</h4>
+                        <div class="value" id="statTotal">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>In Waiting</h4>
+                        <div class="value" id="statWaiting" style="color: #fbbf24;">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Served</h4>
+                        <div class="value" id="statServed" style="color: #4ade80;">0</div>
+                    </div>
+                </div>
+
+                <div class="queue-container">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                        <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.5rem;">Current Patient Queue</h3>
+                        <div id="queueRefresh" style="color: var(--text-muted); font-size: 0.85rem; display: flex; align-items: center; gap: 6px;">
+                            <i data-lucide="refresh-cw" size="14"></i> Live Updates Active
+                        </div>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="queue-table">
+                            <thead>
+                                <tr>
+                                    <th>Token #</th>
+                                    <th>Patient</th>
+                                    <th>Age</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="queueBody">
+                                <!-- Loaded via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="emptyQueue" style="display: none; text-align: center; padding: 48px; color: var(--text-muted);">
+                        <i data-lucide="users" size="48" style="margin-bottom: 16px; opacity: 0.2;"></i>
+                        <p>No patients in the queue for today.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tab: Edit Profile -->
+            <section id="profileTab" class="tab-content">
+                <div class="profile-container">
+                    <form id="profileForm" onsubmit="handleProfileUpdate(event)">
+                        <div class="profile-grid">
+                            <div class="avatar-upload">
+                                <label>Passport Size Photo</label>
+                                <div class="avatar-preview" onclick="document.getElementById('photoInput').click()">
+                                    <img id="profilePreview" src="" style="display: none;">
+                                    <div id="previewPlaceholder">
+                                        <i data-lucide="camera" size="32"></i>
+                                        <span>Click to Upload</span>
+                                    </div>
+                                </div>
+                                <input type="file" id="photoInput" hidden accept="image/*" onchange="previewImage(event)">
+                                <p style="font-size: 0.7rem; color: var(--text-muted);">Recommended: 500x500px JPG/PNG</p>
+                            </div>
+
+                            <div class="profile-fields">
+                                <div class="form-group">
+                                    <label>Full Name</label>
+                                    <input type="text" id="profName" required placeholder="Dr. John Doe">
+                                </div>
+                                <div class="form-group">
+                                    <label>Qualification</label>
+                                    <input type="text" id="profQual" placeholder="MBBS, MD (Pediatrics)">
+                                </div>
+                                <div class="form-group">
+                                    <label>Treatments / Specialities</label>
+                                    <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                                        <input type="text" id="treatmentInput" placeholder="e.g. Children Doctor">
+                                        <button type="button" class="btn-action" onclick="addTreatment()">Add</button>
+                                    </div>
+                                    <div class="treatment-tags" id="treatmentTags">
+                                        <!-- Tags added here -->
+                                    </div>
+                                    <input type="hidden" id="profTreatments">
+                                </div>
+                                <div class="form-group">
+                                    <label>Professional Bio</label>
+                                    <textarea id="profBio" rows="4" placeholder="Briefly describe your experience..."></textarea>
+                                </div>
+                                <div style="display: flex; justify-content: flex-end;">
+                                    <button type="submit" class="btn-primary" id="saveBtn">Save Profile Changes</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </section>
         </main>
     </div>
+
+    <!-- Mobile Nav -->
+    <nav class="mobile-bottom-nav">
+        <a href="#" class="m-nav-link active" onclick="switchTab('schedule', this)">
+            <i data-lucide="calendar"></i>
+            <span>Schedule</span>
+        </a>
+        <a href="#" class="m-nav-link" onclick="switchTab('profile', this)">
+            <i data-lucide="user-cog"></i>
+            <span>Profile</span>
+        </a>
+        <a href="#" class="m-nav-link" onclick="handleLogout(event)">
+            <i data-lucide="log-out"></i>
+            <span>Logout</span>
+        </a>
+    </nav>
 
     <script src="../js/services/supabase.js"></script>
     <script>
         lucide.createIcons();
         
-        const doctorId = 'current-doctor-id'; // Get from session
+        let currentDoctor = null;
+        let treatments = [];
 
-        async function loadQueue() {
+        async function checkSession() {
+            const { data: { session } } = await window.supabaseClient.auth.getSession();
+            if (!session) {
+                window.location.href = '../auth.html?role=doctor';
+                return;
+            }
+            loadDoctorProfile(session.user.id);
+        }
+
+        async function loadDoctorProfile(userId) {
+            const { data, error } = await window.supabaseClient
+                .from('profiles')
+                .select('*, hospitals(name)')
+                .eq('id', userId)
+                .single();
+
+            if (error) {
+                console.error(error);
+                return;
+            }
+
+            currentDoctor = data;
+            
+            // Update UI
+            document.getElementById('headerDocName').textContent = data.name || 'Doctor';
+            document.getElementById('headerSpecialty').textContent = data.qualification || 'General';
+            document.getElementById('welcomeText').textContent = `Welcome, ${data.name || 'Doctor'}`;
+            
+            if (data.photo_url) {
+                const img = document.getElementById('profilePreview');
+                img.src = data.photo_url;
+                img.style.display = 'block';
+                document.getElementById('previewPlaceholder').style.display = 'none';
+                
+                document.getElementById('headerAvatar').innerHTML = `<img src="${data.photo_url}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+                document.getElementById('headerAvatar').style.background = 'none';
+            } else {
+                document.getElementById('headerAvatar').textContent = (data.name || 'D').charAt(0).toUpperCase();
+            }
+
+            // Fill Profile Form
+            document.getElementById('profName').value = data.name || '';
+            document.getElementById('profQual').value = data.qualification || '';
+            document.getElementById('profBio').value = data.description || '';
+            
+            if (data.diseases) {
+                treatments = data.diseases.split(',').filter(t => t.trim());
+                renderTreatments();
+            }
+
+            loadTodaySchedule();
+        }
+
+        function switchTab(tab, el) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-link, .m-nav-link').forEach(l => l.classList.remove('active'));
+            
+            if (tab === 'schedule') {
+                document.getElementById('scheduleTab').classList.add('active');
+                document.getElementById('pageSubtitle').textContent = 'Manage your patients for today';
+            } else {
+                document.getElementById('profileTab').classList.add('active');
+                document.getElementById('pageSubtitle').textContent = 'Personalize your professional portal';
+            }
+
+            // Highlight all matching links (sidebar and mobile)
+            document.querySelectorAll(`[onclick*="${tab}"]`).forEach(l => l.classList.add('active'));
+        }
+
+        async function loadTodaySchedule() {
+            if (!currentDoctor) return;
+
+            const today = new Date().toISOString().split('T')[0];
+            
             const { data: tokens, error } = await window.supabaseClient
                 .from('tokens')
                 .select('*')
-                .eq('doctor_id', doctorId)
+                .eq('doctor_id', currentDoctor.id)
+                .gte('created_at', today)
                 .order('num', { ascending: true });
 
             if (error) return console.error(error);
@@ -196,50 +674,172 @@
             const tbody = document.getElementById('queueBody');
             tbody.innerHTML = '';
             
-            let waitingCount = 0;
-            let servedCount = 0;
+            let waiting = 0;
+            let served = 0;
 
-            tokens.forEach(token => {
-                if (token.status === 'waiting') waitingCount++;
-                if (token.status === 'completed') servedCount++;
+            if (tokens.length === 0) {
+                document.getElementById('emptyQueue').style.display = 'block';
+                document.querySelector('.table-wrap').style.display = 'none';
+            } else {
+                document.getElementById('emptyQueue').style.display = 'none';
+                document.querySelector('.table-wrap').style.display = 'block';
+                
+                tokens.forEach(token => {
+                    if (token.status === 'pending' || token.status === 'waiting') waiting++;
+                    if (token.status === 'completed') served++;
 
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><strong style="font-size: 1.1rem; color: var(--primary);">#${token.num}</strong></td>
-                    <td><span style="font-weight: 500;">${token.patient_name}</span></td>
-                    <td><span class="status-pill status-${token.status}">${token.status}</span></td>
-                    <td>
-                        ${token.status === 'waiting' ? `<button class="btn-call" onclick="callPatient(${token.id})">Call Next</button>` : '-'}
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong style="font-size: 1.2rem; color: var(--primary);">#${token.num}</strong></td>
+                        <td>
+                            <div class="patient-info">
+                                <div class="patient-avatar">${token.patient_name.charAt(0)}</div>
+                                <strong>${token.patient_name}</strong>
+                            </div>
+                        </td>
+                        <td>${token.patient_age || 'N/A'} yrs</td>
+                        <td><span class="status-pill status-${token.status}">${token.status}</span></td>
+                        <td>
+                            ${(token.status === 'pending' || token.status === 'waiting') ? 
+                                `<button class="btn-action" onclick="updateTokenStatus(${token.id}, 'active')">Call Patient</button>` : 
+                                (token.status === 'active' ? 
+                                `<button class="btn-action" style="background:#22c55e" onclick="updateTokenStatus(${token.id}, 'completed')">Complete</button>` : 
+                                '-')}
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
 
-            document.getElementById('totalTokens').textContent = tokens.length;
-            document.getElementById('waitingTokens').textContent = waitingCount;
-            document.getElementById('servedTokens').textContent = servedCount;
+            document.getElementById('statTotal').textContent = tokens.length;
+            document.getElementById('statWaiting').textContent = waiting;
+            document.getElementById('statServed').textContent = served;
         }
 
-        async function callPatient(tokenId) {
+        async function updateTokenStatus(tokenId, newStatus) {
             try {
                 const { error } = await window.supabaseClient
                     .from('tokens')
-                    .update({ status: 'active' })
+                    .update({ status: newStatus })
                     .eq('id', tokenId);
                 
                 if (error) throw error;
-                
-                alert('Patient called! Notification sent via WhatsApp.');
-                loadQueue();
+                loadTodaySchedule();
             } catch (err) {
                 alert(err.message);
             }
         }
 
-        loadQueue();
+        // Profile Functions
+        function previewImage(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(r) {
+                    const img = document.getElementById('profilePreview');
+                    img.src = r.target.result;
+                    img.style.display = 'block';
+                    document.getElementById('previewPlaceholder').style.display = 'none';
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function addTreatment() {
+            const val = document.getElementById('treatmentInput').value.trim();
+            if (val && !treatments.includes(val)) {
+                treatments.push(val);
+                renderTreatments();
+                document.getElementById('treatmentInput').value = '';
+            }
+        }
+
+        function removeTreatment(tag) {
+            treatments = treatments.filter(t => t !== tag);
+            renderTreatments();
+        }
+
+        function renderTreatments() {
+            const container = document.getElementById('treatmentTags');
+            container.innerHTML = '';
+            treatments.forEach(t => {
+                const span = document.createElement('span');
+                span.className = 'tag';
+                span.innerHTML = `${t} <button type="button" onclick="removeTreatment('${t}')">&times;</button>`;
+                container.appendChild(span);
+            });
+            document.getElementById('profTreatments').value = treatments.join(',');
+        }
+
+        async function handleProfileUpdate(e) {
+            e.preventDefault();
+            const saveBtn = document.getElementById('saveBtn');
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Saving...';
+
+            try {
+                let photoUrl = currentDoctor.photo_url;
+                const file = document.getElementById('photoInput').files[0];
+
+                if (file) {
+                    // Upload to storage
+                    const fileExt = file.name.split('.').pop();
+                    const fileName = `${currentDoctor.id}-${Math.random()}.${fileExt}`;
+                    const filePath = `avatars/${fileName}`;
+
+                    const { error: uploadError } = await window.supabaseClient.storage
+                        .from('profiles')
+                        .upload(filePath, file);
+
+                    if (uploadError) throw uploadError;
+
+                    const { data: { publicUrl } } = window.supabaseClient.storage
+                        .from('profiles')
+                        .getPublicUrl(filePath);
+                    
+                    photoUrl = publicUrl;
+                }
+
+                const updates = {
+                    name: document.getElementById('profName').value,
+                    qualification: document.getElementById('profQual').value,
+                    description: document.getElementById('profBio').value,
+                    diseases: treatments.join(','),
+                    photo_url: photoUrl,
+                    updated_at: new Date()
+                };
+
+                const { error } = await window.supabaseClient
+                    .from('profiles')
+                    .update(updates)
+                    .eq('id', currentDoctor.id);
+
+                if (error) throw error;
+
+                alert('Profile updated successfully!');
+                loadDoctorProfile(currentDoctor.id);
+                switchTab('schedule');
+            } catch (err) {
+                alert(err.message);
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Save Profile Changes';
+            }
+        }
+
+        async function handleLogout(e) {
+            e.preventDefault();
+            await window.supabaseClient.auth.signOut();
+            window.location.href = '../index.html';
+        }
+
+        // Initialize
+        checkSession();
+
+        // Subscribe to changes
         window.supabaseClient
-            .channel('tokens')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'tokens' }, loadQueue)
+            .channel('tokens-channel')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'tokens' }, loadTodaySchedule)
             .subscribe();
     </script>
 </body>

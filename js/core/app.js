@@ -1,6 +1,6 @@
 // Global App Initialization
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('HealthSync initialized');
+    console.log('MediQ initialized');
     
     // Check if Supabase is connected
     if (window.supabaseClient) {

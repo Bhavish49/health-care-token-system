@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patient Portal | HealthSync Access</title>
+    <title>Patient Portal | MediQ Access</title>
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,19 +17,65 @@
     <!-- Styles -->
     <link rel="stylesheet" href="css/main.css">
     <style>
-        .portal-header {
+        .portal-hero {
             padding-top: 140px;
-            text-align: center;
-            margin-bottom: 60px;
+            margin-bottom: 48px;
+            position: relative;
         }
 
-        .portal-header h1 {
-            font-size: 3.5rem;
-            font-family: 'Outfit', sans-serif;
-            background: linear-gradient(to bottom, #fff, #94a3b8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .hospital-banner {
+            width: 100%;
+            height: 300px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 32px;
+            border: 1px solid var(--glass-border);
+            margin-bottom: 32px;
+            display: flex;
+            align-items: flex-end;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+            background-color: #1e293b;
+        }
+        .hospital-banner::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(15, 23, 42, 0.9), transparent);
+        }
+
+        .banner-content {
+            position: relative;
+            z-index: 10;
+        }
+
+        .hospital-specialty {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
             margin-bottom: 12px;
+        }
+
+        .hospital-name {
+            font-size: 3rem;
+            font-family: 'Outfit', sans-serif;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .hospital-info-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 32px;
+            margin-bottom: 48px;
         }
 
         .doctor-selection {
@@ -67,7 +113,9 @@
             align-items: center;
             justify-content: center;
             border: 1px solid rgba(14, 165, 233, 0.2);
+            overflow: hidden;
         }
+        .doc-avatar-wrap img { width: 100%; height: 100%; object-fit: cover; }
 
         .doc-details h3 {
             font-size: 1.4rem;
@@ -93,7 +141,6 @@
             border: 1px solid rgba(34, 197, 94, 0.2);
         }
 
-        /* Modal Overhaul */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -115,16 +162,6 @@
             max-width: 480px;
             text-align: center;
             box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.8);
-        }
-
-        .modal-elite i.ticket-icon {
-            width: 80px;
-            height: 80px;
-            color: var(--primary);
-            margin-bottom: 32px;
-            background: rgba(14, 165, 233, 0.1);
-            padding: 20px;
-            border-radius: 24px;
         }
 
         .form-elite {
@@ -178,6 +215,35 @@
             transform: scale(1.02);
             box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
         }
+
+        @media (max-width: 991px) {
+            .hospital-banner {
+                height: auto;
+                min-height: 250px;
+                padding: 30px 20px;
+            }
+            .hospital-name {
+                font-size: 2.2rem;
+            }
+            .doctor-selection {
+                grid-template-columns: 1fr;
+            }
+            .doctor-card-elite {
+                padding: 24px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .portal-hero {
+                padding-top: 100px;
+            }
+            .hospital-name {
+                font-size: 1.8rem;
+            }
+            .modal-elite {
+                padding: 32px 20px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -189,40 +255,52 @@
     <nav class="navbar scrolled">
         <div class="container nav-content">
             <a href="index.html" class="logo">
-                <i data-lucide="shield-check"></i> HealthSync
+                <i data-lucide="shield-check"></i> Medi<span class="logo-accent">Q</span>
             </a>
             <div class="nav-actions">
-                <span style="color: var(--text-muted); font-size: 0.9rem; font-weight: 600;">Access Portal</span>
+                <span style="color: var(--text-muted); font-size: 0.9rem; font-weight: 600;">Patient Portal</span>
             </div>
         </div>
     </nav>
 
     <main class="container">
-        <header class="portal-header fade-up">
-            <h1 id="hospitalName">Loading Facility...</h1>
-            <p style="color: var(--text-muted); font-size: 1.1rem;">Secure Digital Token Issuance System</p>
-        </header>
+        <div class="portal-hero">
+            <div id="hospBanner" class="hospital-banner">
+                <div class="banner-content">
+                    <span id="hospSpec" class="hospital-specialty">General Care</span>
+                    <h1 id="hospName" class="hospital-name">Loading Facility...</h1>
+                    <p id="hospLoc" style="color: rgba(255,255,255,0.8); font-weight: 500;"><i data-lucide="map-pin" size="16" style="vertical-align: middle; margin-right: 4px;"></i> Location unknown</p>
+                </div>
+            </div>
 
-        <div id="doctorList" class="doctor-selection fade-up" style="animation-delay: 0.2s;">
-            <!-- Doctors will be loaded here -->
+            <div class="hospital-info-card">
+                <h3 style="margin-bottom: 12px; color: #fff;">About Our Facility</h3>
+                <p id="hospBio" style="color: var(--text-muted); line-height: 1.8;">Welcome to our medical facility. We provide high-quality healthcare services to our community.</p>
+            </div>
+
+            <h2 style="font-size: 2rem; margin-bottom: 32px;">Available Doctors</h2>
+            <div id="doctorList" class="doctor-selection">
+                <!-- Doctors loaded from public.profiles -->
+            </div>
         </div>
     </main>
 
+    <!-- Token Modal -->
     <div id="tokenModal" class="modal-overlay">
-        <div class="modal-elite fade-up">
-            <i data-lucide="ticket" class="ticket-icon"></i>
-            <h2 style="font-size: 2rem; color: #fff; margin-bottom: 8px;">Request Token</h2>
-            <p style="color: var(--text-muted);">Enter your identification details below</p>
+        <div class="modal-elite">
+            <i data-lucide="ticket" style="width: 64px; height: 64px; color: var(--primary); margin-bottom: 24px;"></i>
+            <h2 style="font-size: 1.8rem; margin-bottom: 8px;">Request Token</h2>
+            <p id="selectedDocName" style="color: var(--text-muted);">Confirm your details for the selected doctor</p>
             
             <div class="form-elite">
-                <label>Full Legal Name</label>
+                <label>Your Full Name</label>
                 <input type="text" id="patientName" placeholder="e.g. Alexander Pierce">
                 
-                <label>Mobile Number (WhatsApp)</label>
+                <label>WhatsApp Number</label>
                 <input type="tel" id="patientPhone" placeholder="+91 00000 00000">
                 
-                <button class="btn-elite" id="generateTokenBtn">Authorize & Generate Token</button>
-                <button style="background: none; border: none; color: var(--text-muted); width: 100%; margin-top: 20px; cursor: pointer; font-weight: 600;" onclick="closeModal()">Dismiss</button>
+                <button class="btn-elite" id="generateTokenBtn">Get Digital Token</button>
+                <button style="background: none; border: none; color: var(--text-muted); width: 100%; margin-top: 16px; cursor: pointer;" onclick="closeModal()">Cancel</button>
             </div>
         </div>
     </div>
@@ -230,39 +308,70 @@
     <script src="js/services/supabase.js"></script>
     <script>
         lucide.createIcons();
-        
+        const params = new URLSearchParams(window.location.search);
+        const hospitalId = params.get('hosp');
         let selectedDoctorId = null;
 
-        async function loadDoctors() {
-            const { data: doctors, error } = await window.supabaseClient
+        async function initPortal() {
+            if (!hospitalId) {
+                alert("Invalid Hospital ID. Returning to home.");
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Load Hospital from public.hospitals
+            const { data: hosp } = await window.supabaseClient
+                .from('hospitals')
+                .select('*')
+                .eq('id', hospitalId)
+                .single();
+            
+            if (hosp) {
+                document.getElementById('hospName').innerText = hosp.name;
+                document.getElementById('hospLoc').innerHTML = `<i data-lucide="map-pin" size="16"></i> ${hosp.address || 'Address not listed'}`;
+                document.getElementById('hospSpec').innerText = hosp.specialty || 'General Care';
+                document.getElementById('hospBio').innerText = hosp.description || 'Welcome to our facility. We are committed to providing the best patient experience.';
+                if (hosp.photo_url) {
+                    document.getElementById('hospBanner').style.backgroundImage = `url('${hosp.photo_url}')`;
+                }
+            }
+
+            // Load Doctors from public.profiles
+            const { data: doctors } = await window.supabaseClient
                 .from('profiles')
                 .select('*')
-                .eq('role', 'doctor');
+                .eq('hospital_id', hospitalId);
             
             const list = document.getElementById('doctorList');
             list.innerHTML = '';
             
-            doctors.forEach((doc, index) => {
-                const card = document.createElement('div');
-                card.className = 'doctor-card-elite';
-                card.style.animationDelay = `${0.3 + (index * 0.1)}s`;
-                card.onclick = () => openModal(doc.id);
-                card.innerHTML = `
-                    <div class="doc-avatar-wrap"><i data-lucide="user"></i></div>
-                    <div class="doc-details">
-                        <h3>${doc.full_name}</h3>
-                        <p>${doc.specialization || 'Clinical Specialist'}</p>
-                        <p style="font-size: 0.8rem; margin-top: 4px;">Department Unit ${doc.room_number || 'A1'}</p>
-                    </div>
-                    <div class="status-pill-elite">Live</div>
-                `;
-                list.appendChild(card);
-            });
+            if (doctors && doctors.length > 0) {
+                doctors.forEach(doc => {
+                    const card = document.createElement('div');
+                    card.className = 'doctor-card-elite';
+                    card.onclick = () => openModal(doc);
+                    card.innerHTML = `
+                        <div class="doc-avatar-wrap">
+                            ${doc.photo_url ? `<img src="${doc.photo_url}" alt="Doctor">` : `<i data-lucide="user"></i>`}
+                        </div>
+                        <div class="doc-details">
+                            <h3>${doc.name || 'Dr. Anonymous'}</h3>
+                            <p>${doc.specialization || 'Medical Specialist'}</p>
+                            <p style="font-size: 0.8rem; margin-top: 4px;">Unit ${doc.room_number || 'A1'}</p>
+                        </div>
+                        <div class="status-pill-elite">Online</div>
+                    `;
+                    list.appendChild(card);
+                });
+            } else {
+                list.innerHTML = '<p style="color: var(--text-muted); grid-column: 1/-1; text-align: center;">No doctors are currently available at this facility.</p>';
+            }
             lucide.createIcons();
         }
 
-        function openModal(docId) {
-            selectedDoctorId = docId;
+        function openModal(doc) {
+            selectedDoctorId = doc.id;
+            document.getElementById('selectedDocName').innerText = `Booking for ${doc.name}`;
             document.getElementById('tokenModal').style.display = 'flex';
         }
 
@@ -270,46 +379,38 @@
             document.getElementById('tokenModal').style.display = 'none';
         }
 
-        // Token generation logic (keeping existing Supabase logic)
         document.getElementById('generateTokenBtn').addEventListener('click', async () => {
             const name = document.getElementById('patientName').value;
             const phone = document.getElementById('patientPhone').value;
+            if (!name || !phone) return alert('Please provide your details.');
+
+            // Load tokens linked to profiles.id
+            const { data: lastToken } = await window.supabaseClient
+                .from('tokens')
+                .select('num')
+                .eq('doctor_id', selectedDoctorId)
+                .order('num', { ascending: false })
+                .limit(1)
+                .maybeSingle();
             
-            if (!name || !phone) return alert('Please provide identification details.');
+            const nextNum = (lastToken?.num || 0) + 1;
 
-            try {
-                const { data: lastToken } = await window.supabaseClient
-                    .from('tokens')
-                    .select('num')
-                    .eq('doctor_id', selectedDoctorId)
-                    .order('num', { ascending: false })
-                    .limit(1)
-                    .maybeSingle();
-                
-                const nextNum = (lastToken?.num || 0) + 1;
+            const { data, error } = await window.supabaseClient
+                .from('tokens')
+                .insert({
+                    doctor_id: selectedDoctorId,
+                    patient_name: name,
+                    patient_phone: phone,
+                    num: nextNum,
+                    status: 'pending'
+                });
 
-                const { data, error } = await window.supabaseClient
-                    .from('tokens')
-                    .insert({
-                        doctor_id: selectedDoctorId,
-                        patient_name: name,
-                        patient_phone: phone,
-                        num: nextNum,
-                        status: 'waiting'
-                    })
-                    .select()
-                    .single();
-
-                if (error) throw error;
-                
-                alert(`Token Verified! Sequence ID: ${nextNum}`);
-                closeModal();
-            } catch (error) {
-                alert(error.message);
-            }
+            if (error) return alert(error.message);
+            alert(`Token Confirmed! Your number is #${nextNum}.`);
+            closeModal();
         });
 
-        loadDoctors();
+        initPortal();
     </script>
 </body>
 </html>
