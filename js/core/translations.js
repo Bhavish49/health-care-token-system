@@ -7,7 +7,7 @@ const translations = {
         "nav_settings": "Settings",
         "dr_reg": "Doctor Registration",
         "hosp_login": "Hospital Login",
-        "login": "Login",
+        "login": "User Login",
         "find_hosp": "Find Your Hospital",
         "search_sub": "Search by hospital name to get your digital token",
         "hero_eyebrow": "Next-Gen Hospital Management",
@@ -53,8 +53,8 @@ const translations = {
         "auth_choice_title": "Portal Access",
         "auth_choice_sub": "Choose your access level to proceed",
         "patient_note": "<strong>Note:</strong> Patients do not need to login or register. Please search for your hospital to get a token.",
-        "hosp_access": "Hospital Registration / Login",
-        "dr_access": "Doctor Registration / Login"
+        "hosp_access": "Hospital Login",
+        "dr_access": "Doctor Login"
     },
     hi: {
         "nav_home": "मुख्य पृष्ठ",
@@ -246,7 +246,7 @@ function setLanguage(lang) {
             }
         }
     });
-    
+
     // Update HTML lang attribute
     document.documentElement.lang = lang;
 }
@@ -254,18 +254,18 @@ function setLanguage(lang) {
 document.addEventListener('DOMContentLoaded', () => {
     const savedLang = localStorage.getItem('mediQLang') || 'en';
     const langSelect = document.getElementById('languageSelect');
-    
+
     if (langSelect) {
         // Set the select value based on savedLang
         const reverseLangMap = { 'en': 'English', 'hi': 'Hindi', 'ta': 'Tamil', 'kn': 'Kannada' };
         langSelect.value = reverseLangMap[savedLang];
-        
+
         langSelect.addEventListener('change', (e) => {
             const val = e.target.value;
             const langMap = { 'English': 'en', 'Hindi': 'hi', 'Tamil': 'ta', 'Kannada': 'kn' };
             setLanguage(langMap[val]);
         });
     }
-    
+
     setLanguage(savedLang);
 });

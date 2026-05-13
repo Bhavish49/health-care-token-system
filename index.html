@@ -1,19 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MediQ | Smart Hospital Queue Management</title>
-    <meta name="description" content="MediQ streamlines hospital patient flow with intelligent digital token management, multi-doctor queues, and real-time WhatsApp notifications.">
-    
+    <meta name="description"
+        content="MediQ streamlines hospital patient flow with intelligent digital token management, multi-doctor queues, and real-time WhatsApp notifications.">
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@700;800;900&display=swap"
+        rel="stylesheet">
+
     <!-- Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    
+
     <!-- Supabase -->
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="js/services/supabase.js"></script>
@@ -24,8 +28,11 @@
         .hero-section {
             min-height: 100vh;
             display: flex;
-            align-items: flex-end; /* anchor content to bottom */
+            align-items: flex-end;
+            /* anchor content to bottom */
             padding-top: 76px;
+            position: relative;
+            z-index: 500;
         }
 
         /* Left column bottom-aligned, right column centered */
@@ -33,14 +40,19 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 60px;
-            align-items: flex-end; /* both columns anchor at bottom */
-            padding-bottom: 80px;  /* lift above footer edge */
+            align-items: flex-end;
+            /* both columns anchor at bottom */
+            padding-bottom: 120px;
+            /* increased padding for search dropdown room */
         }
 
         /* ── Left: Hospital Search ────────── */
         .hospital-search-panel {
-            padding: 0 0 0 0; /* no extra padding, grid bottom-padding handles spacing */
+            padding: 0 0 0 0;
             align-self: flex-end;
+            position: relative;
+            z-index: 1000;
+            /* Ensure it floats above stats bar */
         }
 
         .search-label {
@@ -71,14 +83,14 @@
             border: 2px solid #0f172a;
             border-radius: 16px;
             padding: 0 20px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
             transition: all 0.2s;
         }
 
         .search-input-row:focus-within {
-            background: rgba(255,255,255,0.85);
+            background: rgba(255, 255, 255, 0.85);
             border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(249,115,22,0.15);
+            box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.15);
         }
 
         .search-input-row i {
@@ -113,44 +125,67 @@
             transition: color 0.2s;
         }
 
-        .search-clear:hover { color: #475569; }
+        .search-clear:hover {
+            color: #475569;
+        }
 
         /* Dropdown results */
         .search-dropdown {
             position: absolute;
-            top: calc(100% + 8px);
-            left: 0; right: 0;
-            background: rgba(255,255,255,0.96);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.9);
-            border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+            top: calc(100% + 12px);
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            box-shadow: 0 25px 70px rgba(15, 23, 42, 0.15);
             overflow: hidden;
             display: none;
-            z-index: 100;
+            z-index: 9999;
+            animation: dropdownFade 0.2s ease;
         }
 
-        .search-dropdown.open { display: block; }
+        @keyframes dropdownFade {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .search-dropdown.open {
+            display: block;
+        }
 
         .search-result-item {
             display: flex;
             align-items: center;
             gap: 16px;
-            padding: 16px 20px;
+            padding: 18px 24px;
             text-decoration: none;
-            transition: background 0.15s;
+            transition: all 0.2s;
             border-bottom: 1px solid #f1f5f9;
             cursor: pointer;
         }
 
-        .search-result-item:last-child { border-bottom: none; }
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
 
-        .search-result-item:hover { background: rgba(249,115,22,0.05); }
+        .search-result-item:hover {
+            background: #f8fafc;
+            padding-left: 28px;
+        }
 
         .search-result-icon {
-            width: 40px; height: 40px;
+            width: 40px;
+            height: 40px;
             border-radius: 10px;
-            background: rgba(249,115,22,0.1);
+            background: rgba(249, 115, 22, 0.1);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -171,23 +206,26 @@
         }
 
         .search-empty {
-            padding: 24px;
+            padding: 40px 24px;
             text-align: center;
-            color: #94a3b8;
-            font-size: 0.9rem;
+            color: #475569;
+            font-size: 0.95rem;
+            font-weight: 500;
         }
 
         .search-loading {
-            padding: 20px;
+            padding: 30px;
             text-align: center;
-            color: #94a3b8;
-            font-size: 0.875rem;
+            color: var(--primary);
+            font-size: 0.9rem;
+            font-weight: 600;
         }
 
         /* ── Right: Hero text ────────── */
         .hero-inner {
             padding: 0 0 0 0;
-            align-self: center; /* keep hero text vertically centered */
+            align-self: center;
+            /* keep hero text vertically centered */
         }
 
         .hero-eyebrow {
@@ -216,11 +254,14 @@
             margin-bottom: 20px;
         }
 
-        .hero-title span { color: var(--primary); }
+        .hero-title span {
+            color: var(--primary);
+        }
 
         .hero-subtitle {
             font-size: 1.05rem;
-            color: #1e3a5f;  /* deep navy — readable on the near-white right side of illustration */
+            color: #1e3a5f;
+            /* deep navy — readable on the near-white right side of illustration */
             line-height: 1.72;
             margin-bottom: 40px;
             max-width: 480px;
@@ -258,7 +299,7 @@
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            background: rgba(255,255,255,0.85);
+            background: rgba(255, 255, 255, 0.85);
             color: var(--text);
             padding: 14px 28px;
             border-radius: 10px;
@@ -272,12 +313,12 @@
         .btn-cta-secondary:hover {
             background: #fff;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
         }
 
         /* ── Stats Bar ────────────────────────────── */
         .stats-bar {
-            background: rgba(255,255,255,0.95);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(12px);
             border-top: 1px solid var(--border);
             border-bottom: 1px solid var(--border);
@@ -296,7 +337,9 @@
             border-right: 1px solid var(--border);
         }
 
-        .stat-item:last-child { border-right: none; }
+        .stat-item:last-child {
+            border-right: none;
+        }
 
         .stat-item .value {
             font-family: 'Outfit', sans-serif;
@@ -349,7 +392,7 @@
             margin-bottom: 16px;
         }
 
-        .section-intro + .section-intro {
+        .section-intro+.section-intro {
             margin-bottom: 64px;
         }
 
@@ -372,7 +415,9 @@
         .service-card::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0;
+            top: 0;
+            left: 0;
+            right: 0;
             height: 3px;
             background: linear-gradient(to right, var(--primary), #60c2f7);
             transform: scaleX(0);
@@ -386,7 +431,9 @@
             border-color: rgba(26, 143, 227, 0.2);
         }
 
-        .service-card:hover::before { transform: scaleX(1); }
+        .service-card:hover::before {
+            transform: scaleX(1);
+        }
 
         .service-icon {
             width: 52px;
@@ -479,7 +526,7 @@
         /* ── Footer ───────────────────────────────── */
         .footer {
             background: var(--text);
-            color: rgba(255,255,255,0.6);
+            color: rgba(255, 255, 255, 0.6);
             padding: 48px 0;
         }
 
@@ -501,8 +548,13 @@
             color: #fff;
         }
 
-        .footer-logo i { color: #60c2f7; }
-        .footer-copy { font-size: 0.85rem; }
+        .footer-logo i {
+            color: #60c2f7;
+        }
+
+        .footer-copy {
+            font-size: 0.85rem;
+        }
 
         /* ── Responsive Adjustments ── */
         @media (max-width: 991px) {
@@ -575,6 +627,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Background -->
     <div class="bg-scene"></div>
@@ -599,7 +652,13 @@
 
             <!-- RIGHT: Actions -->
             <div class="nav-actions">
-                <button onclick="openModal('authChoiceModal')" class="btn-primary" data-i18n="login">Login</button>
+                <button onclick="openModal('authChoiceModal')" class="btn-primary" data-i18n="login" id="loginBtn">User
+                    Login</button>
+                <div id="activeTokenContainer" class="hidden" style="margin-left: 12px;">
+                    <button onclick="showLiveTracking()" class="btn-primary btn-live-token">
+                        <i data-lucide="bell-ring" size="16"></i> Live Token
+                    </button>
+                </div>
             </div>
 
             <!-- MOBILE TOGGLE -->
@@ -622,8 +681,7 @@
                 <div class="search-box-wrap">
                     <div class="search-input-row">
                         <i data-lucide="search" size="20"></i>
-                        <input type="text" id="hospitalSearch"
-                            placeholder="e.g. City General Hospital..."
+                        <input type="text" id="hospitalSearch" placeholder="e.g. City General Hospital..."
                             autocomplete="off">
                         <button class="search-clear" id="searchClear">
                             <i data-lucide="x" size="16"></i>
@@ -647,7 +705,8 @@
                     <span>Healthier Hospitals.</span>
                 </h1>
                 <p class="hero-subtitle" data-i18n="hero_subtitle">
-                    MediQ replaces paper tokens and crowded waiting rooms with an intelligent digital queue system — giving doctors control and patients peace of mind.
+                    MediQ replaces paper tokens and crowded waiting rooms with an intelligent digital queue system —
+                    giving doctors control and patients peace of mind.
                 </p>
                 <div class="hero-cta">
                     <a href="auth.html?role=admin" class="btn-cta-primary">
@@ -695,18 +754,18 @@
             <h2 class="section-title" data-i18n="services_title">Everything a Modern<br>Hospital Needs</h2>
 
             <p class="section-intro">
-                MediQ provides hospitals with a fully integrated digital token management ecosystem. 
-                At its core, the system eliminates physical token counters and replaces them with intelligent, 
-                cloud-backed queuing technology. Each patient receives a unique digital token upon arrival — 
-                either via the patient portal or directly at a facility kiosk — and is automatically 
+                MediQ provides hospitals with a fully integrated digital token management ecosystem.
+                At its core, the system eliminates physical token counters and replaces them with intelligent,
+                cloud-backed queuing technology. Each patient receives a unique digital token upon arrival —
+                either via the patient portal or directly at a facility kiosk — and is automatically
                 notified in real time as their turn approaches, reducing waiting room congestion by up to 70%.
             </p>
             <p class="section-intro">
-                Beyond token issuance, MediQ delivers a comprehensive suite of tools for hospital administrators 
-                and clinical staff. Admins can onboard multiple doctors under a single facility, assign room numbers, 
-                define specializations, and monitor live queue metrics from a unified command dashboard. 
-                Doctors receive a dedicated clinical view to call, skip, or complete patient appointments with one 
-                click, while automated WhatsApp notifications keep patients informed at every step — 
+                Beyond token issuance, MediQ delivers a comprehensive suite of tools for hospital administrators
+                and clinical staff. Admins can onboard multiple doctors under a single facility, assign room numbers,
+                define specializations, and monitor live queue metrics from a unified command dashboard.
+                Doctors receive a dedicated clinical view to call, skip, or complete patient appointments with one
+                click, while automated WhatsApp notifications keep patients informed at every step —
                 turning a traditionally stressful experience into a seamless, dignified one.
             </p>
 
@@ -714,32 +773,38 @@
                 <div class="service-card">
                     <div class="service-icon"><i data-lucide="ticket" size="24"></i></div>
                     <h3>Digital Token Issuance</h3>
-                    <p>Patients generate tokens instantly via the web portal. No counter, no paper, no confusion — just a unique queue number delivered to their phone.</p>
+                    <p>Patients generate tokens instantly via the web portal. No counter, no paper, no confusion — just
+                        a unique queue number delivered to their phone.</p>
                 </div>
                 <div class="service-card">
                     <div class="service-icon"><i data-lucide="message-circle" size="24"></i></div>
                     <h3>WhatsApp Notifications</h3>
-                    <p>Automatic real-time alerts are sent to patients via WhatsApp the moment their turn is approaching, keeping them informed from anywhere.</p>
+                    <p>Automatic real-time alerts are sent to patients via WhatsApp the moment their turn is
+                        approaching, keeping them informed from anywhere.</p>
                 </div>
                 <div class="service-card">
                     <div class="service-icon"><i data-lucide="layout-dashboard" size="24"></i></div>
                     <h3>Doctor Dashboard</h3>
-                    <p>Each doctor gets a personal live queue view to manage their patients efficiently — call next, mark complete, or skip with a single action.</p>
+                    <p>Each doctor gets a personal live queue view to manage their patients efficiently — call next,
+                        mark complete, or skip with a single action.</p>
                 </div>
                 <div class="service-card">
                     <div class="service-icon"><i data-lucide="building-2" size="24"></i></div>
                     <h3>Hospital Administration</h3>
-                    <p>Register and manage your entire hospital — multiple departments, multiple doctors, room assignments, and facility metrics in one place.</p>
+                    <p>Register and manage your entire hospital — multiple departments, multiple doctors, room
+                        assignments, and facility metrics in one place.</p>
                 </div>
                 <div class="service-card">
                     <div class="service-icon"><i data-lucide="users" size="24"></i></div>
                     <h3>Multi-Doctor Support</h3>
-                    <p>Run parallel queues for every specialist under one hospital node. Cardiology, Neurology, Dermatology — all independent, all live.</p>
+                    <p>Run parallel queues for every specialist under one hospital node. Cardiology, Neurology,
+                        Dermatology — all independent, all live.</p>
                 </div>
                 <div class="service-card">
                     <div class="service-icon"><i data-lucide="shield-check" size="24"></i></div>
                     <h3>Secure Access Control</h3>
-                    <p>Doctors verify themselves using hospital credentials before creating an account, ensuring only authorized medical staff join your facility.</p>
+                    <p>Doctors verify themselves using hospital credentials before creating an account, ensuring only
+                        authorized medical staff join your facility.</p>
                 </div>
             </div>
         </div>
@@ -755,22 +820,73 @@
                 <div class="step-item">
                     <div class="step-number">1</div>
                     <h4 data-i18n="step1_title">Hospital Registers</h4>
-                    <p data-i18n="step1_desc">Admin creates a facility account with hospital name, email, and location via Google Maps.</p>
+                    <p data-i18n="step1_desc">Admin creates a facility account with hospital name, email, and location
+                        via Google Maps.</p>
                 </div>
                 <div class="step-item">
                     <div class="step-number">2</div>
                     <h4 data-i18n="step2_title">Doctors Join</h4>
-                    <p data-i18n="step2_desc">Doctors verify using hospital credentials, then complete their professional profile.</p>
+                    <p data-i18n="step2_desc">Doctors verify using hospital credentials, then complete their
+                        professional profile.</p>
                 </div>
                 <div class="step-item">
                     <div class="step-number">3</div>
                     <h4 data-i18n="step3_title">Patient Gets Token</h4>
-                    <p data-i18n="step3_desc">Patient selects a doctor and receives an instant digital token via the patient portal.</p>
+                    <p data-i18n="step3_desc">Patient selects a doctor and receives an instant digital token via the
+                        patient portal.</p>
                 </div>
                 <div class="step-item">
                     <div class="step-number">4</div>
                     <h4 data-i18n="step4_title">Real-Time Updates</h4>
-                    <p data-i18n="step4_desc">Doctor calls patients from their dashboard. Patient gets a WhatsApp alert instantly.</p>
+                    <p data-i18n="step4_desc">Doctor calls patients from their dashboard. Patient gets a WhatsApp alert
+                        instantly.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── PORTAL ACCESS SECTION ── -->
+    <section class="portal-access-section" id="access" style="background: white; padding: 100px 0;">
+        <div class="container">
+            <span class="section-tag">Quick Access</span>
+            <h2 class="section-title">Join the MediQ Platform</h2>
+            <p class="section-intro">Access your dedicated portal to manage health tokens, monitor clinics, or find
+                specialists.</p>
+
+            <div class="services-grid" style="margin-top: 60px;">
+                <!-- NORMAL USER LOGIN (Google) -->
+                <div class="service-card"
+                    style="text-align: center; border: 2px solid #f1f5f9; cursor: pointer; transition: all 0.3s;"
+                    onclick="loginWithGoogle()">
+                    <div class="service-icon" style="background: #fff; border: 1px solid #e2e8f0;">
+                        <img src="https://www.google.com/favicon.ico" style="width: 20px;" alt="Google">
+                    </div>
+                    <h3>User Login</h3>
+                    <p>Patients & normal guests can login instantly with Google to track their tokens and health
+                        history.</p>
+                    <button class="btn-cta-primary" style="margin-top: 20px; width: 100%;">Continue with Google</button>
+                </div>
+
+                <!-- HOSPITAL LOGIN -->
+                <div class="service-card"
+                    style="text-align: center; border: 2px solid #f1f5f9; cursor: pointer; transition: all 0.3s;"
+                    onclick="window.location.href='auth.html?role=admin'">
+                    <div class="service-icon"><i data-lucide="building-2" size="24"></i></div>
+                    <h3>Hospital Portal</h3>
+                    <p>Administrators can register their facility, manage doctors, and monitor live hospital metrics.
+                    </p>
+                    <button class="btn-cta-secondary" style="margin-top: 20px; width: 100%;">Admin Login</button>
+                </div>
+
+                <!-- DOCTOR LOGIN -->
+                <div class="service-card"
+                    style="text-align: center; border: 2px solid #f1f5f9; cursor: pointer; transition: all 0.3s;"
+                    onclick="window.location.href='auth.html?role=doctor'">
+                    <div class="service-icon"><i data-lucide="stethoscope" size="24"></i></div>
+                    <h3>Doctor View</h3>
+                    <p>Verified specialists can manage their live patient queue and send real-time turn notifications.
+                    </p>
+                    <button class="btn-cta-secondary" style="margin-top: 20px; width: 100%;">Doctor Login</button>
                 </div>
             </div>
         </div>
@@ -788,7 +904,8 @@
                         <i data-lucide="shield-check"></i> Medi<span class="logo-accent">Q</span>
                     </div>
                     <p class="footer-tagline">
-                        Intelligent digital queue management for modern hospitals. Reduce wait times, improve patient care.
+                        Intelligent digital queue management for modern hospitals. Reduce wait times, improve patient
+                        care.
                     </p>
                 </div>
 
@@ -847,11 +964,47 @@
         <div class="footer-social-bar">
             <div class="container footer-social-inner">
                 <div class="social-icons">
-                    <a href="#" aria-label="Facebook"><i data-lucide="facebook" size="20"></i></a>
-                    <a href="#" aria-label="Twitter/X"><i data-lucide="twitter" size="20"></i></a>
-                    <a href="#" aria-label="Instagram"><i data-lucide="instagram" size="20"></i></a>
-                    <a href="#" aria-label="LinkedIn"><i data-lucide="linkedin" size="20"></i></a>
-                    <a href="#" aria-label="YouTube"><i data-lucide="youtube" size="20"></i></a>
+                    <!-- Facebook -->
+                    <a href="#" aria-label="Facebook">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                        </svg>
+                    </a>
+                    <!-- X / Twitter -->
+                    <a href="#" aria-label="Twitter/X">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 4l16 16M4 20L20 4" />
+                        </svg>
+                    </a>
+                    <!-- Instagram -->
+                    <a href="#" aria-label="Instagram">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                            <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+                        </svg>
+                    </a>
+                    <!-- LinkedIn -->
+                    <a href="#" aria-label="LinkedIn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+                            <rect width="4" height="12" x="2" y="9" />
+                            <circle cx="4" cy="4" r="2" />
+                        </svg>
+                    </a>
+                    <!-- YouTube -->
+                    <a href="#" aria-label="YouTube">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z" />
+                            <polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" />
+                        </svg>
+                    </a>
                 </div>
             </div>
         </div>
@@ -876,15 +1029,19 @@
     <div id="helpModal" class="hs-modal-overlay" onclick="closeModal('helpModal')">
         <div class="hs-modal" onclick="event.stopPropagation()">
             <button class="hs-modal-close" onclick="closeModal('helpModal')"><i data-lucide="x" size="20"></i></button>
-            <div class="hs-modal-icon" style="background:rgba(249,115,22,0.1)"><i data-lucide="help-circle" size="28" style="color:var(--primary)"></i></div>
+            <div class="hs-modal-icon" style="background:rgba(249,115,22,0.1)"><i data-lucide="help-circle" size="28"
+                    style="color:var(--primary)"></i></div>
             <h2 class="hs-modal-title">Help Center</h2>
             <p class="hs-modal-sub">How can we help you today?</p>
             <div class="hs-help-grid">
-                <a href="#" class="hs-help-card"><i data-lucide="book-open" size="22"></i><span>Getting Started</span></a>
+                <a href="#" class="hs-help-card"><i data-lucide="book-open" size="22"></i><span>Getting
+                        Started</span></a>
                 <a href="#" class="hs-help-card"><i data-lucide="hospital" size="22"></i><span>Hospital Setup</span></a>
-                <a href="#" class="hs-help-card"><i data-lucide="stethoscope" size="22"></i><span>Doctor Onboarding</span></a>
+                <a href="#" class="hs-help-card"><i data-lucide="stethoscope" size="22"></i><span>Doctor
+                        Onboarding</span></a>
                 <a href="#" class="hs-help-card"><i data-lucide="ticket" size="22"></i><span>Token System</span></a>
-                <a href="#" class="hs-help-card"><i data-lucide="message-circle" size="22"></i><span>WhatsApp Alerts</span></a>
+                <a href="#" class="hs-help-card"><i data-lucide="message-circle" size="22"></i><span>WhatsApp
+                        Alerts</span></a>
                 <a href="#" class="hs-help-card"><i data-lucide="mail" size="22"></i><span>Contact Support</span></a>
             </div>
         </div>
@@ -892,24 +1049,38 @@
     <!-- ── Auth Choice Modal ── -->
     <div id="authChoiceModal" class="hs-modal-overlay" onclick="closeModal('authChoiceModal')">
         <div class="hs-modal" onclick="event.stopPropagation()">
-            <button class="hs-modal-close" onclick="closeModal('authChoiceModal')"><i data-lucide="x" size="20"></i></button>
-            <div class="hs-modal-icon" style="background:rgba(14,165,233,0.1)"><i data-lucide="lock" size="28" style="color:var(--primary)"></i></div>
+            <button class="hs-modal-close" onclick="closeModal('authChoiceModal')"><i data-lucide="x"
+                    size="20"></i></button>
+            <div class="hs-modal-icon" style="background:rgba(14,165,233,0.1)"><i data-lucide="lock" size="28"
+                    style="color:var(--primary)"></i></div>
             <h2 class="hs-modal-title" data-i18n="auth_choice_title">Portal Access</h2>
             <p class="hs-modal-sub" data-i18n="auth_choice_sub">Choose your access level to proceed</p>
-            
-            <div class="hs-auth-note">
-                <i data-lucide="info" size="16"></i>
-                <p data-i18n="patient_note"><strong>Note:</strong> Patients do not need to login or register. Please search for your hospital to get a token.</p>
+
+
+            <div class="hs-help-grid" style="grid-template-columns: 1fr;">
+                <button onclick="loginWithGoogle()" class="hs-help-card"
+                    style="flex-direction:row; text-align:left; padding:24px; width: 100%; gap: 20px; border: 2px solid var(--primary); background: rgba(14,165,233,0.05);">
+                    <div
+                        style="background: #fff; padding: 10px; border-radius: 12px; border: 1px solid #e2e8f0; display: flex;">
+                        <img src="https://www.google.com/favicon.ico" style="width: 24px;" alt="Google">
+                    </div>
+                    <div>
+                        <strong style="display: block; font-size: 1.1rem;">User Login</strong>
+                        <span style="font-size: 0.85rem; color: #64748b;">Login with Google (Patients)</span>
+                    </div>
+                </button>
             </div>
 
-            <div class="hs-help-grid">
-                <a href="auth.html?role=admin" class="hs-help-card" style="flex-direction:column; text-align:center; padding:32px;">
+            <div class="hs-help-grid" style="margin-top: 16px;">
+                <a href="auth.html?role=admin" class="hs-help-card"
+                    style="flex-direction:column; text-align:center; padding:32px;">
                     <i data-lucide="building-2" size="32"></i>
-                    <span data-i18n="hosp_access">Hospital Registration / Login</span>
+                    <span data-i18n="hosp_access">Hospital Login</span>
                 </a>
-                <a href="auth.html?role=doctor" class="hs-help-card" style="flex-direction:column; text-align:center; padding:32px;">
+                <a href="auth.html?role=doctor" class="hs-help-card"
+                    style="flex-direction:column; text-align:center; padding:32px;">
                     <i data-lucide="stethoscope" size="32"></i>
-                    <span data-i18n="dr_access">Doctor Registration / Login</span>
+                    <span data-i18n="dr_access">Doctor Login</span>
                 </a>
             </div>
         </div>
@@ -918,26 +1089,42 @@
     <!-- ── Settings Modal ── -->
     <div id="settingsModal" class="hs-modal-overlay" onclick="closeModal('settingsModal')">
         <div class="hs-modal" onclick="event.stopPropagation()">
-            <button class="hs-modal-close" onclick="closeModal('settingsModal')"><i data-lucide="x" size="20"></i></button>
-            <div class="hs-modal-icon" style="background:rgba(249,115,22,0.1)"><i data-lucide="settings" size="28" style="color:var(--primary)"></i></div>
+            <button class="hs-modal-close" onclick="closeModal('settingsModal')"><i data-lucide="x"
+                    size="20"></i></button>
+            <div class="hs-modal-icon" style="background:rgba(249,115,22,0.1)"><i data-lucide="settings" size="28"
+                    style="color:var(--primary)"></i></div>
             <h2 class="hs-modal-title" data-i18n="settings_title">Settings</h2>
             <p class="hs-modal-sub" data-i18n="settings_sub">Manage your MediQ preferences</p>
             <div class="hs-settings-list">
                 <div class="hs-setting-row">
-                    <div><strong data-i18n="language">Language</strong><p data-i18n="lang_desc">Choose your display language</p></div>
-                    <select class="hs-select" id="languageSelect"><option>English</option><option>Hindi</option><option>Tamil</option><option>Kannada</option></select>
+                    <div><strong data-i18n="language">Language</strong>
+                        <p data-i18n="lang_desc">Choose your display language</p>
+                    </div>
+                    <select class="hs-select" id="languageSelect">
+                        <option>English</option>
+                        <option>Hindi</option>
+                        <option>Tamil</option>
+                        <option>Kannada</option>
+                    </select>
                 </div>
                 <div class="hs-setting-row">
-                    <div><strong data-i18n="notifications">Notifications</strong><p data-i18n="notif_desc">WhatsApp &amp; SMS alerts</p></div>
+                    <div><strong data-i18n="notifications">Notifications</strong>
+                        <p data-i18n="notif_desc">WhatsApp &amp; SMS alerts</p>
+                    </div>
                     <label class="hs-toggle"><input type="checkbox" checked><span></span></label>
                 </div>
                 <div class="hs-setting-row">
-                    <div><strong data-i18n="dark_mode">Dark Mode</strong><p data-i18n="dark_desc">Switch to dark interface</p></div>
+                    <div><strong data-i18n="dark_mode">Dark Mode</strong>
+                        <p data-i18n="dark_desc">Switch to dark interface</p>
+                    </div>
                     <label class="hs-toggle"><input type="checkbox"><span></span></label>
                 </div>
                 <div class="hs-setting-row">
-                    <div><strong data-i18n="account">Account</strong><p data-i18n="acc_desc">Login or register</p></div>
-                    <a href="auth.html" class="hs-setting-link"><span data-i18n="open">Open</span> <i data-lucide="arrow-right" size="14"></i></a>
+                    <div><strong data-i18n="account">Account</strong>
+                        <p data-i18n="acc_desc">Login or register</p>
+                    </div>
+                    <a href="auth.html" class="hs-setting-link"><span data-i18n="open">Open</span> <i
+                            data-lucide="arrow-right" size="14"></i></a>
                 </div>
             </div>
         </div>
@@ -948,14 +1135,18 @@
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(15,23,42,0.45);
+            background: rgba(15, 23, 42, 0.45);
             backdrop-filter: blur(6px);
             z-index: 9000;
             align-items: center;
             justify-content: center;
             padding: 24px;
         }
-        .hs-modal-overlay.open { display: flex; }
+
+        .hs-modal-overlay.open {
+            display: flex;
+        }
+
         .hs-modal {
             background: #ffffff;
             border-radius: 24px;
@@ -963,15 +1154,18 @@
             width: 100%;
             max-width: 540px;
             position: relative;
-            box-shadow: 0 30px 80px rgba(0,0,0,0.15);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.15);
             animation: fadeUp 0.3s ease;
         }
+
         .hs-modal-close {
             position: absolute;
-            top: 20px; right: 20px;
+            top: 20px;
+            right: 20px;
             background: #f1f5f9;
             border: none;
-            width: 36px; height: 36px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             cursor: pointer;
             display: flex;
@@ -980,15 +1174,21 @@
             color: var(--text-muted);
             transition: background 0.2s;
         }
-        .hs-modal-close:hover { background: #e2e8f0; }
+
+        .hs-modal-close:hover {
+            background: #e2e8f0;
+        }
+
         .hs-modal-icon {
-            width: 60px; height: 60px;
+            width: 60px;
+            height: 60px;
             border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 24px;
         }
+
         .hs-modal-title {
             font-family: 'Outfit', sans-serif;
             font-size: 1.75rem;
@@ -996,13 +1196,20 @@
             color: var(--text);
             margin-bottom: 6px;
         }
-        .hs-modal-sub { color: var(--text-muted); margin-bottom: 32px; font-size: 0.95rem; }
+
+        .hs-modal-sub {
+            color: var(--text-muted);
+            margin-bottom: 32px;
+            font-size: 0.95rem;
+        }
+
         /* Help grid */
         .hs-help-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 14px;
         }
+
         .hs-help-card {
             display: flex;
             align-items: center;
@@ -1017,9 +1224,18 @@
             font-size: 0.9rem;
             transition: all 0.2s;
         }
-        .hs-help-card:hover { border-color: var(--primary); color: var(--primary); background: rgba(249,115,22,0.04); }
-        .hs-help-card i { color: var(--primary); flex-shrink: 0; }
-        
+
+        .hs-help-card:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(249, 115, 22, 0.04);
+        }
+
+        .hs-help-card i {
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
         .hs-auth-note {
             background: #f0f9ff;
             border: 1px solid #e0f2fe;
@@ -1032,11 +1248,23 @@
             font-size: 0.85rem;
             line-height: 1.5;
         }
-        .hs-auth-note i { flex-shrink: 0; margin-top: 2px; }
-        .hs-auth-note p { margin: 0; }
-        
+
+        .hs-auth-note i {
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .hs-auth-note p {
+            margin: 0;
+        }
+
         /* Settings list */
-        .hs-settings-list { display: flex; flex-direction: column; gap: 4px; }
+        .hs-settings-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
         .hs-setting-row {
             display: flex;
             justify-content: space-between;
@@ -1044,9 +1272,24 @@
             padding: 18px 0;
             border-bottom: 1px solid #f1f5f9;
         }
-        .hs-setting-row:last-child { border-bottom: none; }
-        .hs-setting-row strong { display: block; color: var(--text); font-size: 0.95rem; margin-bottom: 3px; }
-        .hs-setting-row p { color: var(--text-muted); font-size: 0.82rem; margin: 0; }
+
+        .hs-setting-row:last-child {
+            border-bottom: none;
+        }
+
+        .hs-setting-row strong {
+            display: block;
+            color: var(--text);
+            font-size: 0.95rem;
+            margin-bottom: 3px;
+        }
+
+        .hs-setting-row p {
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            margin: 0;
+        }
+
         .hs-select {
             border: 1px solid #e2e8f0;
             border-radius: 8px;
@@ -1056,26 +1299,49 @@
             background: #fff;
             cursor: pointer;
         }
-        .hs-toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
-        .hs-toggle input { opacity: 0; width: 0; height: 0; }
+
+        .hs-toggle {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+
+        .hs-toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
         .hs-toggle span {
-            position: absolute; inset: 0;
+            position: absolute;
+            inset: 0;
             background: #cbd5e1;
             border-radius: 100px;
             cursor: pointer;
             transition: 0.3s;
         }
+
         .hs-toggle span::before {
             content: '';
             position: absolute;
-            width: 18px; height: 18px;
-            left: 3px; top: 3px;
+            width: 18px;
+            height: 18px;
+            left: 3px;
+            top: 3px;
             background: white;
             border-radius: 50%;
             transition: 0.3s;
         }
-        .hs-toggle input:checked + span { background: var(--primary); }
-        .hs-toggle input:checked + span::before { transform: translateX(20px); }
+
+        .hs-toggle input:checked+span {
+            background: var(--primary);
+        }
+
+        .hs-toggle input:checked+span::before {
+            transform: translateX(20px);
+        }
+
         .hs-setting-link {
             display: flex;
             align-items: center;
@@ -1137,21 +1403,21 @@
 
         // Nav link wiring
         document.querySelectorAll('.nav-links li a').forEach(link => {
-            link.addEventListener('click', function(e) {
+            link.addEventListener('click', function (e) {
                 const href = this.getAttribute('href');
-                if (href === '#help') { 
-                    e.preventDefault(); 
-                    openModal('helpModal'); 
+                if (href === '#help') {
+                    e.preventDefault();
+                    openModal('helpModal');
                 }
-                else if (href === '#settings') { 
-                    e.preventDefault(); 
-                    openModal('settingsModal'); 
+                else if (href === '#settings') {
+                    e.preventDefault();
+                    openModal('settingsModal');
                 }
                 else if (href.startsWith('#')) {
                     const target = document.querySelector(href);
-                    if (target) { 
-                        e.preventDefault(); 
-                        target.scrollIntoView({ behavior: 'smooth' }); 
+                    if (target) {
+                        e.preventDefault();
+                        target.scrollIntoView({ behavior: 'smooth' });
                     }
                 }
             });
@@ -1177,10 +1443,10 @@
             });
         });
         // ── Hospital Search ──────────────────────────────
-        const searchInput  = document.getElementById('hospitalSearch');
-        const searchDrop   = document.getElementById('searchDropdown');
-        const searchClear  = document.getElementById('searchClear');
-        let searchTimer    = null;
+        const searchInput = document.getElementById('hospitalSearch');
+        const searchDrop = document.getElementById('searchDropdown');
+        const searchClear = document.getElementById('searchClear');
+        let searchTimer = null;
 
         searchInput.addEventListener('input', () => {
             const q = searchInput.value.trim();
@@ -1195,7 +1461,7 @@
             searchDrop.innerHTML = `<div class="search-loading">${t('searching')}</div>`;
             searchDrop.classList.add('open');
 
-            searchTimer = setTimeout(() => searchHospitals(q), 300);
+            searchTimer = setTimeout(() => searchMediQ(q), 300);
         });
 
         searchClear.addEventListener('click', () => {
@@ -1212,45 +1478,252 @@
             }
         });
 
-        async function searchHospitals(query) {
+        async function searchMediQ(query) {
             try {
-                const { data, error } = await window.supabaseClient
+                // 1. Search Hospitals
+                const { data: hopitals, error: hErr } = await window.supabaseClient
                     .from('hospitals')
                     .select('id, name, address')
                     .ilike('name', `%${query}%`)
-                    .limit(6);
+                    .limit(4);
 
-                if (error) throw error;
+                // 2. Search Doctors (Profiles)
+                const { data: doctors, error: dErr } = await window.supabaseClient
+                    .from('profiles')
+                    .select('id, name, specialization, hospital_id, hospitals(name)')
+                    .ilike('name', `%${query}%`)
+                    .limit(4);
 
-                if (!data || data.length === 0) {
-                    searchDrop.innerHTML = `
-                        <div class="search-empty">
-                            <i data-lucide="building-2" size="28" style="color:#cbd5e1;margin-bottom:8px"></i>
-                            <p>${t('no_hospital_found')} "<strong>${query}</strong>"</p>
-                        </div>`;
-                    lucide.createIcons();
-                    return;
+                let resultsHTML = '';
+
+                // Add Hospitals to Results
+                if (hopitals && hopitals.length > 0) {
+                    resultsHTML += `<div style="padding:10px 16px; font-size:0.7rem; font-weight:800; color:var(--primary); text-transform:uppercase; background:rgba(249,115,22,0.05);">Hospitals</div>`;
+                    resultsHTML += hopitals.map(h => `
+                        <a href="portal.html?hosp=${h.id}" class="search-result-item">
+                            <div class="search-result-icon"><i data-lucide="building-2" size="20"></i></div>
+                            <div class="search-result-info">
+                                <strong>${h.name}</strong>
+                                <span>${h.address || 'Location not set'}</span>
+                            </div>
+                            <i data-lucide="chevron-right" size="16" style="color:#cbd5e1;margin-left:auto;"></i>
+                        </a>
+                    `).join('');
                 }
 
-                searchDrop.innerHTML = data.map(h => `
-                    <a href="portal.html?hosp=${h.id}" class="search-result-item">
-                        <div class="search-result-icon">
-                            <i data-lucide="building-2" size="20"></i>
-                        </div>
-                        <div class="search-result-info">
-                            <strong>${h.name}</strong>
-                            <span>${h.address || t('location_not_set')}</span>
-                        </div>
-                        <i data-lucide="arrow-right" size="16" style="color:#cbd5e1;margin-left:auto;flex-shrink:0"></i>
-                    </a>
-                `).join('');
+                // Add Doctors to Results
+                if (doctors && doctors.length > 0) {
+                    resultsHTML += `<div style="padding:10px 16px; font-size:0.7rem; font-weight:800; color:var(--accent-teal); text-transform:uppercase; background:rgba(16,185,129,0.05); margin-top:4px;">Doctors</div>`;
+                    resultsHTML += doctors.map(d => `
+                        <a href="portal.html?hosp=${d.hospital_id}" class="search-result-item">
+                            <div class="search-result-icon" style="background:rgba(16,185,129,0.1); color:var(--accent-teal);"><i data-lucide="stethoscope" size="20"></i></div>
+                            <div class="search-result-info">
+                                <strong>${d.name}</strong>
+                                <span>${d.specialization || 'Specialist'} • ${d.hospitals?.name || 'MediQ Network'}</span>
+                            </div>
+                            <i data-lucide="chevron-right" size="16" style="color:#cbd5e1;margin-left:auto;"></i>
+                        </a>
+                    `).join('');
+                }
+
+                if (!resultsHTML) {
+                    searchDrop.innerHTML = `
+                        <div class="search-empty">
+                            <i data-lucide="search-x" size="28" style="color:#cbd5e1;margin-bottom:8px"></i>
+                            <p>No results found for "<strong>${query}</strong>"</p>
+                        </div>`;
+                } else {
+                    searchDrop.innerHTML = resultsHTML;
+                }
                 lucide.createIcons();
 
             } catch (err) {
-                searchDrop.innerHTML = `<div class="search-empty">${t('could_not_connect')}</div>`;
+                console.error(err);
+                searchDrop.innerHTML = `<div class="search-empty">Search error. Please try again.</div>`;
             }
         }
     </script>
     <script src="js/core/translations.js"></script>
+    <!-- ── Live Token Modal ── -->
+    <div id="trackingModal" class="modal-overlay"
+        style="display:none; position:fixed; inset:0; background:rgba(2,6,23,0.9); backdrop-filter:blur(16px); z-index:9999; align-items:center; justify-content:center; padding:20px;">
+        <div class="auth-card-elite" style="max-width:440px; text-align:center;">
+            <div
+                style="background:rgba(249,115,22,0.1); width:64px; height:64px; border-radius:16px; display:flex; align-items:center; justify-content:center; margin:0 auto 24px; color:var(--accent-orange);">
+                <i data-lucide="activity" size="32"></i>
+            </div>
+            <h2 id="trackHospName" style="font-family:'Outfit'; font-size:1.5rem; margin-bottom:4px;">Hospital Name</h2>
+            <p id="trackDocName" style="color:var(--text-muted); font-size:0.9rem; margin-bottom:24px;">Dr. Name</p>
+
+            <div
+                style="background:#0f172a; border:1px solid rgba(255,255,255,0.05); border-radius:24px; padding:32px; margin-bottom:24px; position:relative; overflow:hidden;">
+                <p
+                    style="text-transform:uppercase; font-size:0.75rem; font-weight:800; color:var(--text-muted); margin-bottom:8px;">
+                    Your Token</p>
+                <h1 id="trackYourToken" style="font-size:4rem; font-family:'Outfit'; margin:0; line-height:1;">#--</h1>
+
+                <div
+                    style="margin-top:24px; display:flex; justify-content:space-between; border-top:1px solid rgba(255,255,255,0.05); padding-top:20px;">
+                    <div>
+                        <p style="font-size:0.7rem; color:var(--text-muted); margin:0;">NOW SERVING</p>
+                        <h4 id="trackNowServing" style="font-size:1.5rem; margin:0; color:var(--success);">#--</h4>
+                    </div>
+                    <div style="text-align:right;">
+                        <p style="font-size:0.7rem; color:var(--text-muted); margin:0;">EST. WAIT</p>
+                        <h4 id="trackWaitTime" style="font-size:1.5rem; margin:0; color:var(--accent-teal);">-- mins
+                        </h4>
+                    </div>
+                </div>
+            </div>
+
+            <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.6; margin-bottom:32px;">Please arrive at
+                the clinic at least 5 minutes before your estimated time.</p>
+
+            <button class="btn-primary" style="width:100%; padding:14px; margin-bottom:12px;"
+                onclick="document.getElementById('trackingModal').style.display='none'">Keep Tracking</button>
+            <button
+                style="background:none; border:none; color:#ef4444; font-size:0.85rem; font-weight:700; cursor:pointer;"
+                onclick="cancelToken()">Cancel This Token</button>
+        </div>
+    </div>
+
+    <script src="js/services/supabase.js"></script>
+    <script>
+        let activeTokenData = null;
+
+        // --- Google Login & Session Handling ---
+        async function checkUserSession() {
+            const { data: { session } } = await window.supabaseClient.auth.getSession();
+            const navActions = document.querySelector('.nav-actions');
+
+            if (session && session.user) {
+                const user = session.user;
+                const name = user.user_metadata.full_name || user.email;
+                const avatar = user.user_metadata.avatar_url;
+
+                // PRESERVE the activeTokenContainer and ONLY update the login button/profile
+                const loginBtn = document.getElementById('loginBtn');
+                if (loginBtn) {
+                    loginBtn.outerHTML = `
+                      <div class="user-profile-nav" style="display: flex; align-items: center; gap: 12px; background: rgba(14,165,233,0.08); padding: 6px 16px; border-radius: 100px; border: 1px solid rgba(14,165,233,0.2);">
+                          <img src="${avatar || 'https://ui-avatars.com/api/?name=' + name}" style="width: 28px; height: 28px; border-radius: 50%; border: 2px solid white;">
+                          <span style="font-weight: 600; font-size: 0.9rem; color: var(--secondary);">${name}</span>
+                          <button onclick="logout()" style="background: none; border: none; padding: 4px; color: #94a3b8; cursor: pointer; display: flex;" title="Logout">
+                              <i data-lucide="log-out" size="16"></i>
+                          </button>
+                      </div>
+                  `;
+                }
+                lucide.createIcons();
+                checkActiveToken();
+            }
+        }
+
+        async function logout() {
+            await window.supabaseClient.auth.signOut();
+            window.location.reload();
+        }
+
+        function loginWithGoogle() {
+            window.supabaseClient.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: window.location.origin + window.location.pathname
+                }
+            });
+        }
+
+        // --- Active Token Tracking ---
+        async function checkActiveToken() {
+            const { data: { session } } = await window.supabaseClient.auth.getSession();
+            if (!session) return;
+
+            const today = new Date().toISOString().split('T')[0];
+            const { data: tokens } = await window.supabaseClient
+                .from('tokens')
+                .select('*, profiles(name, hospital_id, hospitals(name, address))')
+                .eq('patient_id', session.user.id)
+                .in('status', ['pending', 'waiting', 'active'])
+                .gte('created_at', today)
+                .order('created_at', { ascending: false })
+                .limit(1);
+
+            if (tokens && tokens.length > 0) {
+                activeTokenData = tokens[0];
+                document.getElementById('activeTokenContainer').classList.remove('hidden');
+                if (document.getElementById('trackingModal').style.display === 'flex') {
+                    updateTrackingDisplay();
+                }
+            } else {
+                document.getElementById('activeTokenContainer').classList.add('hidden');
+                document.getElementById('trackingModal').style.display = 'none';
+            }
+        }
+
+        async function updateTrackingDisplay() {
+            if (!activeTokenData) return;
+
+            const t = activeTokenData;
+            document.getElementById('trackHospName').innerText = t.profiles.hospitals.name;
+            document.getElementById('trackDocName').innerText = `Consulting with ${t.profiles.name}`;
+            document.getElementById('trackYourToken').innerText = `#${t.num}`;
+
+            const { data: currentT } = await window.supabaseClient
+                .from('tokens')
+                .select('num')
+                .eq('doctor_id', t.doctor_id)
+                .eq('status', 'active')
+                .order('num', { ascending: false })
+                .limit(1)
+                .maybeSingle();
+
+            const servingNum = currentT?.num || 0;
+            const diff = t.num - servingNum;
+            const waitTime = Math.max(0, diff * 10);
+
+            document.getElementById('trackNowServing').innerText = `#${servingNum}`;
+            document.getElementById('trackWaitTime').innerText = servingNum >= t.num ? 'Your Turn!' : `${waitTime} mins`;
+        }
+
+        function showLiveTracking() {
+            document.getElementById('trackingModal').style.display = 'flex';
+            updateTrackingDisplay();
+        }
+
+        async function cancelToken() {
+            if (!activeTokenData) return;
+            if (!confirm("Are you sure you want to cancel your token? This cannot be undone.")) return;
+
+            try {
+                const { data, error, count } = await window.supabaseClient
+                    .from('tokens')
+                    .update({ status: 'cancelled' })
+                    .eq('id', activeTokenData.id)
+                    .select();
+
+                if (error) throw error;
+
+                // If no rows were updated, it's likely an RLS permission issue
+                if (!data || data.length === 0) {
+                    throw new Error("Permission Denied: You cannot cancel this token (it may belong to a different account or session).");
+                }
+
+                alert("Token cancelled successfully.");
+                activeTokenData = null;
+                document.getElementById('activeTokenContainer').classList.add('hidden');
+                document.getElementById('trackingModal').style.display = 'none';
+            } catch (err) {
+                console.error("Cancellation Error:", err);
+                alert("Error: " + err.message);
+            }
+        }
+
+        // Run on load
+        document.addEventListener('DOMContentLoaded', () => {
+            checkUserSession();
+            setInterval(checkActiveToken, 10000);
+        });
+    </script>
 </body>
+
 </html>

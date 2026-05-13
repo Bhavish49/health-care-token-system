@@ -1,19 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Authorize | MediQ Access</title>
-    
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@700;800&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@700;800&display=swap"
+        rel="stylesheet">
+
     <!-- Icons & Services -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    
+
     <!-- Styles -->
     <link rel="stylesheet" href="css/main.css">
     <style>
@@ -70,7 +72,9 @@
             animation: fadeIn 0.4s ease-out forwards;
         }
 
-        .form-section.active { display: block; }
+        .form-section.active {
+            display: block;
+        }
 
         .input-group {
             margin-bottom: 20px;
@@ -118,7 +122,9 @@
             margin-left: 6px;
         }
 
-        .hidden { display: none !important; }
+        .hidden {
+            display: none !important;
+        }
 
         .verification-badge {
             background: rgba(14, 165, 233, 0.1);
@@ -148,13 +154,14 @@
                 justify-content: space-between;
                 align-items: center;
             }
-            
+
             .nav-content a:last-child {
                 font-size: 0.8rem;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="bg-scene">
         <div class="bg-blur-blob bg-blob-1"></div>
@@ -166,17 +173,20 @@
             <a href="index.html" class="logo">
                 <i data-lucide="shield-check"></i> Medi<span class="logo-accent">Q</span>
             </a>
-            <a href="index.html" style="color: var(--text-muted); text-decoration: none; font-weight: 600;">Back to Home</a>
+            <a href="index.html" style="color: var(--text-muted); text-decoration: none; font-weight: 600;">Back to
+                Home</a>
         </div>
     </nav>
 
     <div class="auth-wrapper">
         <div class="auth-card-elite">
-            <div class="hs-auth-note" style="margin-bottom:24px; background:rgba(14,165,233,0.1); border:1px solid rgba(14,165,233,0.2); color:var(--primary); border-radius:16px; padding:16px; display:flex; gap:12px; font-size:0.85rem;">
+            <div class="hs-auth-note"
+                style="margin-bottom:24px; background:rgba(14,165,233,0.1); border:1px solid rgba(14,165,233,0.2); color:var(--primary); border-radius:16px; padding:16px; display:flex; gap:12px; font-size:0.85rem;">
                 <i data-lucide="info" size="18" style="flex-shrink:0;"></i>
-                <p data-i18n="patient_note" style="margin:0;"><strong>Note:</strong> Patients do not need to login or register here. Use the search on the home page.</p>
+                <p data-i18n="patient_note" style="margin:0;"><strong>Note:</strong> Patients do not need to login or
+                    register here. Use the search on the home page.</p>
             </div>
-            
+
             <div class="auth-tabs" id="authTabs">
                 <button class="auth-tab active" onclick="switchRole('hospital')" id="tabHosp">Hospital</button>
                 <button class="auth-tab" onclick="switchRole('doctor')" id="tabDoc">Doctor</button>
@@ -187,7 +197,7 @@
                 <!-- Login Form -->
                 <div id="hospLogin">
                     <h2 style="font-size: 1.8rem; margin-bottom: 8px;">Hospital Login</h2>
-                    <p style="color: var(--text-muted); margin-bottom: 28px;">Access your facility dashboard.</p>
+                    <p style="color: var(--text-muted); margin-bottom: 28px;">Access your hospital dashboard.</p>
                     <form onsubmit="handleHospLogin(event)">
                         <div class="input-group">
                             <label>Email Address</label>
@@ -200,17 +210,17 @@
                         <button type="submit" class="btn-primary" style="width: 100%; padding: 14px;">Sign In</button>
                     </form>
                     <div class="toggle-auth-type">
-                        Don't have a facility node? <a href="#" onclick="toggleHospAuth('reg')">Register Now</a>
+                        Don't have a hospital account? <a href="#" onclick="toggleHospAuth('reg')">Register Now</a>
                     </div>
                 </div>
 
                 <!-- Registration Form -->
                 <div id="hospReg" class="hidden">
                     <h2 style="font-size: 1.8rem; margin-bottom: 8px;">Hospital Registry</h2>
-                    <p style="color: var(--text-muted); margin-bottom: 28px;">Initialize your medical facility account.</p>
+                    <p style="color: var(--text-muted); margin-bottom: 28px;">Initialize your hospital account.</p>
                     <form onsubmit="handleHospReg(event)">
                         <div class="input-group">
-                            <label>Facility Name</label>
+                            <label>Hospital Name</label>
                             <input type="text" id="hrName" required placeholder="General City Hospital">
                         </div>
                         <div class="input-group">
@@ -225,7 +235,8 @@
                             <label>Confirm Password</label>
                             <input type="password" id="hrConfirm" required placeholder="••••••••">
                         </div>
-                        <button type="submit" class="btn-primary" style="width: 100%; padding: 14px;">Create Registry Account</button>
+                        <button type="submit" class="btn-primary" style="width: 100%; padding: 14px;">Create Registry
+                            Account</button>
                     </form>
                     <div class="toggle-auth-type">
                         Already registered? <a href="#" onclick="toggleHospAuth('login')">Sign In</a>
@@ -237,8 +248,9 @@
             <div id="doctorSection" class="form-section">
                 <div id="docAuth">
                     <h2 style="font-size: 1.8rem; margin-bottom: 8px;">Doctor Portal</h2>
-                    <p style="color: var(--text-muted); margin-bottom: 28px;">Manage your patients and professional profile.</p>
-                    
+                    <p style="color: var(--text-muted); margin-bottom: 28px;">Manage your patients and professional
+                        profile.</p>
+
                     <div id="docLogin">
                         <form onsubmit="handleDocLogin(event)">
                             <div class="input-group">
@@ -249,7 +261,8 @@
                                 <label>Password</label>
                                 <input type="password" id="dlPass" required placeholder="••••••••">
                             </div>
-                            <button type="submit" class="btn-primary" style="width: 100%; padding: 14px;">Portal Login</button>
+                            <button type="submit" class="btn-primary" style="width: 100%; padding: 14px;">Portal
+                                Login</button>
                         </form>
                         <div class="toggle-auth-type">
                             New here? <a href="#" onclick="toggleDocAuth('reg')">Join a Hospital</a>
@@ -258,26 +271,28 @@
 
                     <div id="docStep1" class="hidden">
                         <div class="verification-badge">
-                            <i data-lucide="shield-alert" size="18"></i>
-                            Requires Hospital Admin Verification
+                            <i data-lucide="shield-check" size="18"></i>
+                            Enter Hospital Join Code
                         </div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">
+                            Ask your hospital administrator for their unique 6-digit <strong>Join Code</strong> to
+                            register.
+                        </p>
                         <div class="input-group">
-                            <label>Hospital Admin Email</label>
-                            <input type="email" id="hVerifyEmail" placeholder="admin@hospital.com">
+                            <label>Hospital Join Code</label>
+                            <input type="text" id="hJoinCode" placeholder="HOSP-XXXXXX"
+                                style="text-transform: uppercase;">
                         </div>
-                        <div class="input-group">
-                            <label>Hospital Admin Password</label>
-                            <input type="password" id="hVerifyPass" placeholder="••••••••">
-                        </div>
-                        <button class="btn-primary" style="width: 100%; padding: 14px;" onclick="verifyHospital()">Verify & Proceed</button>
+                        <button class="btn-primary" style="width: 100%; padding: 14px;"
+                            onclick="verifyJoinCode()">Verify Code & Join</button>
                         <div class="toggle-auth-type">
                             Already have an account? <a href="#" onclick="toggleDocAuth('login')">Sign In</a>
                         </div>
                     </div>
 
                     <div id="docStep2" class="hidden">
-                         <h2 style="font-size: 1.8rem; margin-bottom: 8px;">Create Account</h2>
-                         <form onsubmit="handleDocReg(event)">
+                        <h2 style="font-size: 1.8rem; margin-bottom: 8px;">Create Account</h2>
+                        <form onsubmit="handleDocReg(event)">
                             <div class="input-group">
                                 <label>Your Name</label>
                                 <input type="text" id="drName" required placeholder="Dr. John Doe">
@@ -290,8 +305,9 @@
                                 <label>Portal Password</label>
                                 <input type="password" id="drPass" required placeholder="••••••••">
                             </div>
-                            <button type="submit" class="btn-primary" style="width: 100%; padding: 14px;">Finalize Doctor Portal</button>
-                         </form>
+                            <button type="submit" class="btn-primary" style="width: 100%; padding: 14px;">Finalize
+                                Doctor Portal</button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -361,10 +377,10 @@
                 .select('id')
                 .eq('admin_id', data.user.id)
                 .single();
-            
+
             if (!hosp) {
                 await window.supabaseClient.auth.signOut();
-                return alert("This account is not a registered hospital admin.");
+                return alert("Account found, but no Hospital Registration exists. Please use the 'Sign Up' tab to register your hospital first.");
             }
 
             window.location.href = 'dashboards/admin.html';
@@ -415,7 +431,7 @@
                 .select('id')
                 .eq('id', data.user.id)
                 .single();
-            
+
             if (!profile) {
                 await window.supabaseClient.auth.signOut();
                 return alert("No doctor profile found for this account.");
@@ -425,26 +441,24 @@
         }
 
         let verifiedHospitalId = null;
-        async function verifyHospital() {
-            const email = document.getElementById('hVerifyEmail').value;
-            const pass = document.getElementById('hVerifyPass').value;
-            const { data, error } = await window.supabaseClient.auth.signInWithPassword({ email, password: pass });
-            if (error) return alert("Hospital verification failed.");
-            
-            // Get the hospital ID linked to this admin
-            const { data: hosp } = await window.supabaseClient
+        async function verifyJoinCode() {
+            const code = document.getElementById('hJoinCode').value.trim().toUpperCase();
+            if (!code) return alert("Please enter a join code.");
+
+            // Get the hospital ID linked to this code
+            const { data: hosp, error } = await window.supabaseClient
                 .from('hospitals')
-                .select('id')
-                .eq('admin_id', data.user.id)
+                .select('id, name')
+                .eq('join_code', code)
                 .single();
 
-            if (!hosp) {
-                await window.supabaseClient.auth.signOut();
-                return alert("Verified user is not a hospital admin.");
+            if (error || !hosp) {
+                return alert("Invalid Join Code. Please check with your hospital admin.");
             }
 
             verifiedHospitalId = hosp.id;
-            await window.supabaseClient.auth.signOut();
+            alert(`Verified! You are joining: ${hosp.name}`);
+
             document.getElementById('docStep1').classList.add('hidden');
             document.getElementById('docStep2').classList.remove('hidden');
         }
@@ -478,4 +492,5 @@
         }
     </script>
 </body>
+
 </html>
