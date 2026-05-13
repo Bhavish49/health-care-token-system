@@ -115,11 +115,31 @@ MediQ utilizes **Row Level Security (RLS)** to ensure data integrity:
 
 ---
 
-## 🚀 Deployment
+## � Roadmap / Future Improvements
 
-The system is designed to be purely static and can be deployed to:
-- **Vercel / Netlify**: Connect your GitHub and deploy in one click.
-- **GitHub Pages**: Ensure the `index.html` is at the root directory.
+To evolve from a strong MVP to a full enterprise-grade Healthcare SaaS, the following features are planned:
+- [ ] **QR Code Token System**: Patients can scan a physical QR code at the clinic to instantly fetch their ticket, completely bypassing the search process.
+- [ ] **AI Queue Prediction**: Machine learning layer to predict precise wait times based on historical doctor consultation durations.
+- [ ] **Analytics Dashboard for Admins**: Visual graphs for patient footfall, peak hours, and doctor performance metrics.
+- [ ] **Framework Migration**: Transitioning the vanilla frontend structure to Next.js or React for component-based scalability and PWA (Progressive Web App) support.
+- [ ] **Payment Integration**: Native consultation fee collection via Razorpay/Stripe during token booking.
+
+---
+
+## �🚀 Deployment
+
+The system is designed to be purely static and can be effortlessly deployed:
+- **Vercel / Netlify**: Connect your GitHub and deploy in one click (Highly Recommended).
+- **GitHub Pages**: Ensure `index.html` is at the root directory.
+
+*Note: Check `.env.example` for the environment variables setup structure expected in production environments.*
+
+---
+
+### 🛡️ API & Architecture Notes
+- The core database logic has been deeply optimized and centralized in `sql/full_schema.sql`.
+- We utilize Supabase Realtime Channels to push sub-second queue updates directly to the DOM without heavy polling.
+- WhatsApp capabilities proxy via a serverless Edge Function (in `supabase/functions/whatsapp-proxy`) to securely mask vendor API tokens.
 
 ---
 
