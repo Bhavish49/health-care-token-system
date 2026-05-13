@@ -11,6 +11,7 @@
 
 ## 📖 Table of Contents
 - [✨ Key Features](#-key-features)
+- [⚙️ How It Works](#️-how-it-works)
 - [📸 Screenshots](#-screenshots)
 - [🏗️ System Architecture](#-system-architecture)
 - [🛠️ Tech Stack](#-tech-stack)
@@ -34,6 +35,25 @@
   <img src="assets/img/tracker.png" alt="Live Token Tracker" width="800"/>
   <p><i>The authentication modal with simplified logic for hospital, doctor, and patient access.</i></p>
 </div>
+
+<br>
+
+<div align="center">
+  <img src="assets/img/doctor_dashboard.png" alt="Doctor Dashboard" width="800"/>
+  <p><i>The clinical dashboard where doctors manage their queue, call patients, and view historical medical logs.</i></p>
+</div>
+
+---
+
+## ⚙️ How It Works
+
+MediQ is designed to streamline the clinical flow with zero redundant steps:
+
+1. **Discovery**: Patients search for their local hospital via the public landing portal. The app instantly connects to Supabase and fetches the available departments and doctors.
+2. **Token Generation**: Instead of standing in line, the patient enters basic details and generates a digital token. The backend automatically calculates their position in the queue relative to other active patients for the specific doctor.
+3. **Live Tracking**: As the queue progresses, the patient's "Live Token" tracker (in the navigation bar) uses WebSockets to reflect the real-time serving number. They are also notified via automated SMS if their turn is imminent.
+4. **Clinical Processing**: Doctors use their private dashboard to view the queue. A single click sets a token to `active`, calling the patient, and later sets it to `completed`.
+5. **Hospital Oversight**: Administrators can onboard new doctors, design the hospital profile, and generate a unique `join_code` that secures internal hospital registration.
 
 ---
 
