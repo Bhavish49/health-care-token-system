@@ -11,6 +11,7 @@
 
 ## 📖 Table of Contents
 - [✨ Key Features](#-key-features)
+- [📸 Screenshots](#-screenshots)
 - [🏗️ System Architecture](#-system-architecture)
 - [🛠️ Tech Stack](#-tech-stack)
 - [🗄️ Database Schema](#-database-schema)
@@ -19,6 +20,23 @@
 - [🚀 Deployment](#-deployment)
 
 ---
+
+## 📸 Screenshots
+
+<div align="center">
+  <img src="assets/img/portal.png" alt="Patient Portal" width="800"/>
+  <p><i>The intuitive patient portal where users can book their tokens and track live queue status.</i></p>
+</div>
+
+<br>
+
+<div align="center">
+  <img src="assets/img/tracker.png" alt="Live Token Tracker" width="800"/>
+  <p><i>The authentication modal with simplified logic for hospital, doctor, and patient access.</i></p>
+</div>
+
+---
+
 
 ## ✨ Key Features
 
