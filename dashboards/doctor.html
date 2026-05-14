@@ -605,16 +605,43 @@
         /* ── Mobile ── */
         @media (max-width: 1024px) {
             .dashboard-container {
-                grid-template-columns: 1fr;
+                display: block;
             }
 
             .sidebar {
-                display: none;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 70px;
+                flex-direction: row;
+                padding: 10px;
+                border-right: none;
+                border-top: 1px solid var(--glass-border);
+                justify-content: space-around;
+                z-index: 2000;
+                background: var(--sidebar-bg);
             }
+            .brand { display: none; }
+            .nav-list {
+                flex-direction: row;
+                width: 100%;
+                justify-content: space-around;
+                align-items: center;
+                gap: 0;
+            }
+            .nav-item {
+                flex-direction: column;
+                padding: 6px;
+                font-size: 0.65rem;
+                gap: 4px;
+            }
+            .nav-item i { margin-right: 0; }
+            .logout-btn { margin-top: 0; }
 
             .main-content {
                 margin-left: 0;
-                padding: 24px 20px;
+                padding: 24px 20px 90px 20px;
             }
 
             .dashboard-grid {
