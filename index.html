@@ -988,7 +988,7 @@
                         </svg>
                     </a>
                     <!-- LinkedIn -->
-                    <a href="#" aria-label="LinkedIn">
+                    <a href="https://www.linkedin.com/in/bhavish-b-n-270943313?utm_source=share_via&utm_content=profile&utm_medium=member_android" target="_blank" aria-label="LinkedIn">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
@@ -1481,7 +1481,7 @@
         async function searchMediQ(query) {
             try {
                 // 1. Search Hospitals
-                const { data: hopitals, error: hErr } = await window.supabaseClient
+                const { data: hospitals, error: hErr } = await window.supabaseClient
                     .from('hospitals')
                     .select('id, name, address')
                     .ilike('name', `%${query}%`)
@@ -1497,9 +1497,9 @@
                 let resultsHTML = '';
 
                 // Add Hospitals to Results
-                if (hopitals && hopitals.length > 0) {
+                if (hospitals && hospitals.length > 0) {
                     resultsHTML += `<div style="padding:10px 16px; font-size:0.7rem; font-weight:800; color:var(--primary); text-transform:uppercase; background:rgba(249,115,22,0.05);">Hospitals</div>`;
-                    resultsHTML += hopitals.map(h => `
+                    resultsHTML += hospitals.map(h => `
                         <a href="portal.html?hosp=${h.id}" class="search-result-item">
                             <div class="search-result-icon"><i data-lucide="building-2" size="20"></i></div>
                             <div class="search-result-info">
