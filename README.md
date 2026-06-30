@@ -167,7 +167,7 @@ To evolve from a strong MVP to a full enterprise-grade Healthcare SaaS, the foll
 ## �🚀 Deployment
 
 The system is designed to be purely static and can be effortlessly deployed:
-- **Vercel / Netlify**: Connect your GitHub and deploy in one click (Highly Recommended).
+- **Vercel / Netlify**: https://mediqtoken.netlify.app/
 - **GitHub Pages**: Ensure `index.html` is at the root directory.
 
 *Note: Check `.env.example` for the environment variables setup structure expected in production environments.*
@@ -181,7 +181,6 @@ The system is designed to be purely static and can be effortlessly deployed:
 
 ---
 
-### 🛡️ Open Source
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
 
 *Crafting the future of healthcare administration.*
