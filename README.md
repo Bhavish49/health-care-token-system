@@ -128,7 +128,7 @@ The heart of the queue. Managed via status-driven logic (`pending`, `active`, `c
 
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/your-username/mediq-hospital-system.git
+   git clone https://github.com/Bhavish49/health-care-token-system.git
    ```
 
 2. **Supabase Initialization**
