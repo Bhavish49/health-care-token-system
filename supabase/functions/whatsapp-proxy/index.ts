@@ -1,6 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
-// Replace with your actual Fast2SMS API Authorization key
 const FAST2SMS_API_KEY = Deno.env.get("FAST2SMS_API_KEY") ?? "dNcMsuFAX7YIrvg6jopimEk3y5JLHlwbRBtVUqaZDfnh2QKSGCtv60GRpCiKWN4UXmAbkuJMjgxSIlqn";
 
 const corsHeaders = {
@@ -24,7 +23,6 @@ serve(async (req) => {
             );
         }
 
-        // Sanitize phone: keep only digits, use last 10 digits
         const mobile = to.replace(/\D/g, '').slice(-10);
 
         if (mobile.length !== 10) {
@@ -34,7 +32,6 @@ serve(async (req) => {
             );
         }
 
-        // Fast2SMS Bulk V2 API — Quick SMS route (no DLT needed for testing)
         const response = await fetch("https://www.fast2sms.com/dev/bulkV2", {
             method: "POST",
             headers: {
@@ -42,7 +39,7 @@ serve(async (req) => {
                 "Content-Type": "application/x-www-form-urlencoded",
             },
             body: new URLSearchParams({
-                route:    "q",         // Quick SMS
+                route:    "q",
                 message:  message,
                 language: "english",
                 flash:    "0",

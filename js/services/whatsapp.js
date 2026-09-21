@@ -1,8 +1,3 @@
-/**
- * WhatsApp Service (Production Mode)
- * Sends custom templates with variables (Doctor, Token, Status).
- */
-
 const WhatsAppService = {
     async sendMessage(templateName, to, variables = []) {
         let cleanTo = to.replace(/\D/g, '');
@@ -13,7 +8,6 @@ const WhatsAppService = {
         const finalUrl = proxyUrl + encodeURIComponent(targetUrl);
         const token = "EAALAGWdyDagBRUTSZAsAljKuZBlZCv6SetWCqKXEHnOAMHhbnl6dyVFxFJKHJsBbb4z9qxqxACNbvjDKCrvgA1dq0akrkZC0n1dd2TC5hXoLsrZB0mGWZBnZBLbhP03KsxmNTyXzmUn0sX6aQW6sHLgpF24P303L5NmUSoF6ZAcBcUMFKepQtZCq5TlTRPCgZAAYQoOFIvgP4PsWhXnWi8YLkJm8X7ZAe5LG2RcmpxYG1ugQ0IJeMx8kWVHCLHJ8O8DtdEaYFybwj0POMgwwzjB8W0t";
 
-        // Map variables to Meta format
         if (!Array.isArray(variables)) variables = [];
         const templateData = {
             name: templateName,
@@ -44,7 +38,7 @@ const WhatsAppService = {
 
             const data = await response.json();
             if (response.ok) {
-                console.log(`SUCCESS! Template ${templateName} sent.`);
+                console.log(`Template ${templateName} sent successfully.`);
                 return true;
             } else {
                 console.error("Meta API Error:", data);
