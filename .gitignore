@@ -3,6 +3,9 @@
 .vscode/
 .idea/
 *.log
+.env
+.env.local
+.env.*.local
 
 # OS files
 Thumbs.db

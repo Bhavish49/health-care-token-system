@@ -3,10 +3,17 @@ const WhatsAppService = {
         let cleanTo = to.replace(/\D/g, '');
         if (cleanTo.length === 10) cleanTo = '91' + cleanTo;
 
+        const phoneId = window.WHATSAPP_PHONE_ID || 'YOUR_PHONE_NUMBER_ID';
+        const token = window.WHATSAPP_TOKEN || 'YOUR_META_ACCESS_TOKEN';
+
+        if (token === 'YOUR_META_ACCESS_TOKEN' || phoneId === 'YOUR_PHONE_NUMBER_ID') {
+            console.warn("WhatsAppService: Meta credentials missing!");
+            return false;
+        }
+
         const proxyUrl = "https://corsproxy.io/?";
-        const targetUrl = "https://graph.facebook.com/v20.0/1074880385711833/messages";
+        const targetUrl = `https://graph.facebook.com/v20.0/${phoneId}/messages`;
         const finalUrl = proxyUrl + encodeURIComponent(targetUrl);
-        const token = "EAALAGWdyDagBRUTSZAsAljKuZBlZCv6SetWCqKXEHnOAMHhbnl6dyVFxFJKHJsBbb4z9qxqxACNbvjDKCrvgA1dq0akrkZC0n1dd2TC5hXoLsrZB0mGWZBnZBLbhP03KsxmNTyXzmUn0sX6aQW6sHLgpF24P303L5NmUSoF6ZAcBcUMFKepQtZCq5TlTRPCgZAAYQoOFIvgP4PsWhXnWi8YLkJm8X7ZAe5LG2RcmpxYG1ugQ0IJeMx8kWVHCLHJ8O8DtdEaYFybwj0POMgwwzjB8W0t";
 
         if (!Array.isArray(variables)) variables = [];
         const templateData = {

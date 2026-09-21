@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
-const FAST2SMS_API_KEY = Deno.env.get("FAST2SMS_API_KEY") ?? "dNcMsuFAX7YIrvg6jopimEk3y5JLHlwbRBtVUqaZDfnh2QKSGCtv60GRpCiKWN4UXmAbkuJMjgxSIlqn";
+const FAST2SMS_API_KEY = Deno.env.get("FAST2SMS_API_KEY") ?? "";
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -20,6 +20,13 @@ serve(async (req) => {
             return new Response(
                 JSON.stringify({ error: "'to' and 'message' fields are required." }),
                 { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+            );
+        }
+
+        if (!FAST2SMS_API_KEY) {
+            return new Response(
+                JSON.stringify({ error: "FAST2SMS_API_KEY environment variable is missing." }),
+                { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
             );
         }
 
